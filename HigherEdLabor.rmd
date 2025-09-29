@@ -1,0 +1,161 @@
+---
+title: "Higher Ed Labor"
+author: "Tom Ben-Shahar"
+date: "February 2025"
+output: pdf_document
+---
+
+Describe your issue very briefly here. Then show it with a minimal, self-contained example in the following R chunk.
+
+```{r setup, cache=TRUE, warning=FALSE}
+
+# Load Packages
+pacman::p_load(tidyverse, broom, janitor, readr, stargazer, skimr, tidymodels, magrittr,doParallel, fixest, modelsummary, kableExtra, did, gt, beepr)
+
+# Set directory
+setwd("C:/Working_Projects/HigherEdLabor")
+
+# Load Data
+union <- read.csv("Written Data/union.csv")
+pay <- read.csv("Written Data/combined_table.csv")
+
+```
+
+```{r data_cleaning, cache=TRUE, warning=FALSE}
+
+# Join the two data frames, keeping all rows from `pay` and matching multiple rows from `union`
+merged_data <- pay %>%
+  left_join(union, by = "UNITID")
+
+
+merged_data <- clean_names(merged_data, case = "lower_camel")
+
+
+merged_data <- merged_data %>% 
+  mutate(
+    after_recog_date = ifelse(yr >= recognitionDate, 1, 0), # Indicator for if the union is recognized
+    after_cba_date = ifelse(yr >= cbaDate, 1, 0), # Indicator for reached collective bargaining agreement
+    after_recog_date = ifelse(recognitionDate %>% is.na(), 0, after_recog_date), 
+    after_cba_date = ifelse(cbaDate %>% is.na(), 0, after_cba_date),
+    endowment = coalesce(f1AEndowment, f2Endowment),# Combine the f1, f2, f3 predictors
+    totalRevenue = coalesce(f1ATotalRevenue, f2TotalRevenue),
+    totalGrants = coalesce(f1ATotalGrants, f2TotalGrants),
+    expenses = coalesce(f1AExpenses, f2Expenses, f3Expenses),
+    tuitionAndFees = coalesce(f1ATuitionAndFees, f2TuitionAndFees),
+    totalAssets = coalesce(f1ATotalAssets, f2TotalAssets, f3TotalAssets),
+    f1a_tuition_percap = f1ATuitionAndFees / ugTot, # Create a measure of tuition per student
+    f1a_grants_percap = f1ATotalGrants / ugTot,
+    f2_tuition_percap = f2TuitionAndFees / ugTot,
+    f2_grants_percap = f2TotalGrants / ugTot,
+    ft = ifelse(grepl("FT", unitComposition), 1, 0),# Add indicator for type of unit composition
+    pt = ifelse(grepl("PT", unitComposition), 1, 0),
+    ttt = ifelse(grepl("TTT", unitComposition), 1, 0),
+    ntt = ifelse(grepl("NTT", unitComposition), 1, 0),
+    # Divide all avg sal measures by 9 for 2011 and earlier to correct for mistake in SQL code
+    avgSal9MoeqTR1 = ifelse(yr <= 2011, avgSal9MoeqTR1 / 9, avgSal9MoeqTR1), 
+    avgSal9MoeqTR2 = ifelse(yr <= 2011, avgSal9MoeqTR2 / 9, avgSal9MoeqTR2), 
+    avgSal9MoeqTR3 = ifelse(yr <= 2011, avgSal9MoeqTR3 / 9, avgSal9MoeqTR3), 
+    avgSal9MoeqTR4 = ifelse(yr <= 2011, avgSal9MoeqTR4 / 9, avgSal9MoeqTR4), 
+    avgSal9MoeqTR5 = ifelse(yr <= 2011, avgSal9MoeqTR5 / 9, avgSal9MoeqTR5), 
+    avgSal9MoeqTR6 = ifelse(yr <= 2011, avgSal9MoeqTR6 / 9, avgSal9MoeqTR6), 
+    avgSal9MoeqTR7 = ifelse(yr <= 2011, avgSal9MoeqTR7 / 9, avgSal9MoeqTR7), 
+
+    avgSal9MoeqMR1 = ifelse(yr <= 2011, avgSal9MoeqMR1 / 9, avgSal9MoeqMR1), 
+    avgSal9MoeqMR2 = ifelse(yr <= 2011, avgSal9MoeqMR2 / 9, avgSal9MoeqMR2), 
+    avgSal9MoeqMR3 = ifelse(yr <= 2011, avgSal9MoeqMR3 / 9, avgSal9MoeqMR3), 
+    avgSal9MoeqMR4 = ifelse(yr <= 2011, avgSal9MoeqMR4 / 9, avgSal9MoeqMR4), 
+    avgSal9MoeqMR5 = ifelse(yr <= 2011, avgSal9MoeqMR5 / 9, avgSal9MoeqMR5), 
+    avgSal9MoeqMR6 = ifelse(yr <= 2011, avgSal9MoeqMR6 / 9, avgSal9MoeqMR6), 
+    avgSal9MoeqMR7 = ifelse(yr <= 2011, avgSal9MoeqMR7 / 9, avgSal9MoeqMR7), 
+
+    avgSal9MoeqWR1 = ifelse(yr <= 2011, avgSal9MoeqWR1 / 9, avgSal9MoeqWR1), 
+    avgSal9MoeqWR2 = ifelse(yr <= 2011, avgSal9MoeqWR2 / 9, avgSal9MoeqWR2), 
+    avgSal9MoeqWR3 = ifelse(yr <= 2011, avgSal9MoeqWR3 / 9, avgSal9MoeqWR3), 
+    avgSal9MoeqWR4 = ifelse(yr <= 2011, avgSal9MoeqWR4 / 9, avgSal9MoeqWR4), 
+    avgSal9MoeqWR5 = ifelse(yr <= 2011, avgSal9MoeqWR5 / 9, avgSal9MoeqWR5), 
+    avgSal9MoeqWR6 = ifelse(yr <= 2011, avgSal9MoeqWR6 / 9, avgSal9MoeqWR6), 
+    avgSal9MoeqWR7 = ifelse(yr <= 2011, avgSal9MoeqWR7 / 9, avgSal9MoeqWR7) 
+  )
+
+# Clean data frame so only 1 row per inst. year.
+# Need different CBA dates for different union comps at same school
+
+indicators <- c("ft", "pt", "ttt", "ntt", "af_cba_n", "af_cba_t", "cba_date_t", "cba_date_n")
+nonind <- setdiff(names(merged_data), c("unitid", "yr", indicators))
+
+
+mdf_clean <- merged_data %>% 
+  mutate(af_cba_t = ifelse(after_cba_date==1 & ttt==1, 1, 0),
+         af_cba_n = ifelse(after_cba_date==1 & ntt==1, 1, 0),
+         # add ttt and ntt specific date columns for did
+         cba_date_t = ifelse(ttt==1, cbaDate, NA),
+         cba_date_n = ifelse(ntt==1, cbaDate, NA)
+         ) %>% 
+  group_by(unitid, yr) %>% 
+  summarise(across(all_of(nonind), first),
+            across(all_of(indicators), max),
+            .groups = "drop")
+  
+mdf_clean %<>% 
+  mutate(
+    logsal1 = log(avgSal9MoeqTR1),
+    logsal2 = log(avgSal9MoeqTR2),
+    logsal3 = log(avgSal9MoeqTR3),
+    logsal4 = log(avgSal9MoeqTR4),
+    logsal5 = log(avgSal9MoeqTR5),
+    logsal6 = log(avgSal9MoeqTR6),
+    logsal7 = log(avgSal9MoeqTR7)
+  ) %>% 
+  group_by(unitid) %>% 
+  mutate(cba_ever = ifelse(any(after_cba_date == 1), 1, 0)) %>% 
+  ungroup() %>% 
+  mutate(t = yr - cbaDate)
+
+  beep(3) # Tell me when its done
+
+```
+
+```{r data_vis, cache=TRUE, warning=FALSE}
+
+# plot avg salaries to see if they look reasonable
+
+mdf_plot <- mdf_clean %>% 
+  group_by(yr) %>% 
+  summarise(
+    avgSal1 = mean(avgSal9MoeqTR1[!is.na(avgSal9MoeqTR1) & avgSal9MoeqTR1 > 0], na.rm = TRUE),
+    avgSal2 = mean(avgSal9MoeqTR2[!is.na(avgSal9MoeqTR2) & avgSal9MoeqTR2 > 0], na.rm = TRUE),
+    avgSal3 = mean(avgSal9MoeqTR3[!is.na(avgSal9MoeqTR3) & avgSal9MoeqTR3 > 0], na.rm = TRUE),
+    avgSal4 = mean(avgSal9MoeqTR4[!is.na(avgSal9MoeqTR4) & avgSal9MoeqTR4 > 0], na.rm = TRUE),
+    avgSal5 = mean(avgSal9MoeqTR5[!is.na(avgSal9MoeqTR5) & avgSal9MoeqTR5 > 0], na.rm = TRUE),
+    avgSal6 = mean(avgSal9MoeqTR6[!is.na(avgSal9MoeqTR6) & avgSal9MoeqTR6 > 0], na.rm = TRUE),
+    avgSal7 = mean(avgSal9MoeqTR7[!is.na(avgSal9MoeqTR7) & avgSal9MoeqTR7 > 0], na.rm = TRUE)
+  ) %>%
+  pivot_longer(cols = starts_with("avgSal"), names_to = "Rank", values_to = "AvgSalary")
+
+
+ggplot(mdf_plot, aes(x = yr, y = AvgSalary, color = Rank)) +
+  geom_point() +
+  geom_line() +
+  labs(color = "Rank") +
+  geom_vline(xintercept = 2011) 
+
+# There is a shift after 2011, which is when the data reporting shifts
+# Remember that pre 2012, salaries are annual, and after salaries are monthly * 9. What if not everyone is on a 9 month contract?
+
+```
+
+```{r test, cache=TRUE, warning=FALSE}
+testdf <- mdf_clean %>%
+  filter(
+    #institutionName == "University of Oregon"
+    unitid == 100654
+  ) %>% 
+  select(
+    avgSal9MoeqTR1, 
+    yr, 
+    unitid, 
+    institutionName, 
+    ugTot
+
+  )
+```
