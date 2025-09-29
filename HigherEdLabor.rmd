@@ -144,6 +144,108 @@ ggplot(mdf_plot, aes(x = yr, y = AvgSalary, color = Rank)) +
 
 ```
 
+```{r balance_table, cache=TRUE, warning=FALSE}
+pre_survey_vars <- c(
+  "f1AEndowment",
+  "f2Endowment",
+  "f2TotalAssets",
+  "f1ATotalAssets",
+  "applicantsTot",
+  "instTotTR1",
+  "instTotTR2",
+  "instTotTR3",
+  "instTotTR4",
+  "instTotTR5",
+  "instTotTR6",
+  "instTotTR7"
+)
+
+
+models <- lapply(pre_survey_vars, function(var) {
+  feols(as.formula(paste("log(",var, ")~ cba_ever")), data = mdf_clean %>% filter(after_cba_date == 0), vcov = "hetero")
+})
+names(models) <- pre_survey_vars
+
+modelsummary(
+  models,
+  title = "Balance Table (in logs)",
+  output = "gt",  # changed to gt for compatibility
+  shape = model ~ term,
+  stars = TRUE
+)
+```
+
+```{r pre_trends, cache=TRUE, warning=FALSE}
+
+outcomes <- c("avgSal9MoeqTR1", "avgSal9MoeqTR2", "avgSal9MoeqTR3", "avgSal9MoeqTR4", "avgSal9MoeqTR5", "avgSal9MoeqTR6", "avgSal9MoeqTR7" )
+
+models_pt <- lapply(outcomes, function(out) {
+  feols(
+    as.formula(paste0("log(",out, ")~ i(t, ref = 0) | unitid + yr")), data = mdf_clean
+  )
+})
+
+modelsummary(
+  models_pt,
+  title = "Pre-Trends Test",
+  output = "gt",
+  shape = term~ model,
+  stars = TRUE,
+  coef_map = c(
+    "t::-1" = "1 Year Before Treatment",
+    "t::-2" = "2 Years Before Treatment",
+    "t::-3" = "3 Years Before Treatment",
+    "t::-4" = "4 Years Before Treatment",
+    "t::-5" = "5 Years Before Treatment"
+  )
+)
+
+# Plot
+mdf_sum <- mdf_clean %>% 
+  filter(!(after_cba_date)) %>% 
+  group_by(cba_ever, yr) %>%
+  summarise(
+    tr1 = mean(avgSal9MoeqTR1, na.rm = TRUE),
+    tr2 = mean(avgSal9MoeqTR2, na.rm = TRUE),
+    tr3 = mean(avgSal9MoeqTR3, na.rm = TRUE),
+    tr4 = mean(avgSal9MoeqTR4, na.rm = TRUE),
+    tr5 = mean(avgSal9MoeqTR5, na.rm = TRUE),
+    tr6 = mean(avgSal9MoeqTR6, na.rm = TRUE),
+    tr7 = mean(avgSal9MoeqTR7, na.rm = TRUE)
+  ) 
+
+
+lapply(c("tr1", "tr2", "tr3", "tr4", "tr5", "tr6", "tr7"), function(out) {
+  ggplot(mdf_sum,aes(x = yr))+
+  geom_smooth(aes(y = log(!!sym(out)), color = factor(cba_ever)))
+})
+
+```
+
+```{r did, cache=TRUE, warning=FALSE}
+dep_vars <- c(
+  "logsal1", 
+  "logsal2", 
+  "logsal3", 
+  "logsal4", 
+  "logsal5", 
+  "logsal6", 
+  "logsal7"
+  )
+
+lapply(dep_vars, function(dep){
+  ggdid(aggte(att_gt(yname = dep,
+                     tname = "yr",
+                     idname = "unitid",
+                     gname = "cba_date_n",
+                     xformla = ~1,
+                     est_method = "reg",
+                     control_group = "notyettreated",
+                     data = mdf_clean), type = "dynamic", na.rm=TRUE), title = dep)
+
+})
+```
+
 ```{r test, cache=TRUE, warning=FALSE}
 testdf <- mdf_clean %>%
   filter(
