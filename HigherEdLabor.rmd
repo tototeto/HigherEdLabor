@@ -50,31 +50,10 @@ merged_data <- merged_data %>%
     ft = ifelse(grepl("FT", unitComposition), 1, 0),# Add indicator for type of unit composition
     pt = ifelse(grepl("PT", unitComposition), 1, 0),
     ttt = ifelse(grepl("TTT", unitComposition), 1, 0),
-    ntt = ifelse(grepl("NTT", unitComposition), 1, 0),
-    # Divide all avg sal measures by 9 for 2011 and earlier to correct for mistake in SQL code
-    avgSal9MoeqTR1 = ifelse(yr <= 2011, avgSal9MoeqTR1 / 9, avgSal9MoeqTR1), 
-    avgSal9MoeqTR2 = ifelse(yr <= 2011, avgSal9MoeqTR2 / 9, avgSal9MoeqTR2), 
-    avgSal9MoeqTR3 = ifelse(yr <= 2011, avgSal9MoeqTR3 / 9, avgSal9MoeqTR3), 
-    avgSal9MoeqTR4 = ifelse(yr <= 2011, avgSal9MoeqTR4 / 9, avgSal9MoeqTR4), 
-    avgSal9MoeqTR5 = ifelse(yr <= 2011, avgSal9MoeqTR5 / 9, avgSal9MoeqTR5), 
-    avgSal9MoeqTR6 = ifelse(yr <= 2011, avgSal9MoeqTR6 / 9, avgSal9MoeqTR6), 
-    avgSal9MoeqTR7 = ifelse(yr <= 2011, avgSal9MoeqTR7 / 9, avgSal9MoeqTR7), 
+    ntt = ifelse(grepl("NTT", unitComposition), 1, 0)
 
-    avgSal9MoeqMR1 = ifelse(yr <= 2011, avgSal9MoeqMR1 / 9, avgSal9MoeqMR1), 
-    avgSal9MoeqMR2 = ifelse(yr <= 2011, avgSal9MoeqMR2 / 9, avgSal9MoeqMR2), 
-    avgSal9MoeqMR3 = ifelse(yr <= 2011, avgSal9MoeqMR3 / 9, avgSal9MoeqMR3), 
-    avgSal9MoeqMR4 = ifelse(yr <= 2011, avgSal9MoeqMR4 / 9, avgSal9MoeqMR4), 
-    avgSal9MoeqMR5 = ifelse(yr <= 2011, avgSal9MoeqMR5 / 9, avgSal9MoeqMR5), 
-    avgSal9MoeqMR6 = ifelse(yr <= 2011, avgSal9MoeqMR6 / 9, avgSal9MoeqMR6), 
-    avgSal9MoeqMR7 = ifelse(yr <= 2011, avgSal9MoeqMR7 / 9, avgSal9MoeqMR7), 
-
-    avgSal9MoeqWR1 = ifelse(yr <= 2011, avgSal9MoeqWR1 / 9, avgSal9MoeqWR1), 
-    avgSal9MoeqWR2 = ifelse(yr <= 2011, avgSal9MoeqWR2 / 9, avgSal9MoeqWR2), 
-    avgSal9MoeqWR3 = ifelse(yr <= 2011, avgSal9MoeqWR3 / 9, avgSal9MoeqWR3), 
-    avgSal9MoeqWR4 = ifelse(yr <= 2011, avgSal9MoeqWR4 / 9, avgSal9MoeqWR4), 
-    avgSal9MoeqWR5 = ifelse(yr <= 2011, avgSal9MoeqWR5 / 9, avgSal9MoeqWR5), 
-    avgSal9MoeqWR6 = ifelse(yr <= 2011, avgSal9MoeqWR6 / 9, avgSal9MoeqWR6), 
-    avgSal9MoeqWR7 = ifelse(yr <= 2011, avgSal9MoeqWR7 / 9, avgSal9MoeqWR7) 
+  # The rest will be done after the mdf transform to save compute time
+    
   )
 
 # Clean data frame so only 1 row per inst. year.
@@ -109,7 +88,36 @@ mdf_clean %<>%
   group_by(unitid) %>% 
   mutate(cba_ever = ifelse(any(after_cba_date == 1), 1, 0)) %>% 
   ungroup() %>% 
-  mutate(t = yr - cbaDate)
+  mutate(t = yr - cbaDate, 
+
+    # Divide all avg sal measures by 9 for 2011 and earlier to correct for mistake in SQL code
+    # Instead of multiplying by 9 to get avg sal for post 2011, divide total salary outlays by # of full time workers
+    # Lets actually just abandon the entire 9moeq and do everything by the above method
+    # 2015 and earlier, instTot is not reported, instead use isntFt
+    avgSalTR1 = ifelse(yr <= 2015, totSalTR1 / instFtTR1,  totSalTR1 / instTotTR1), 
+    avgSalTR2 = ifelse(yr <= 2015, totSalTR2 / instFtTR2,  totSalTR2 / instTotTR2), 
+    avgSalTR3 = ifelse(yr <= 2015, totSalTR3 / instFtTR3,  totSalTR3 / instTotTR3), 
+    avgSalTR4 = ifelse(yr <= 2015, totSalTR4 / instFtTR4,  totSalTR4 / instTotTR4), 
+    avgSalTR5 = ifelse(yr <= 2015, totSalTR5 / instFtTR5,  totSalTR5 / instTotTR5), 
+    avgSalTR6 = ifelse(yr <= 2015, totSalTR6 / instFtTR6,  totSalTR6 / instTotTR6), 
+    avgSalTR7 = ifelse(yr <= 2015, totSalTR7 / instFtTR7,  totSalTR7 / instTotTR7), 
+
+    avgSalMR1 = ifelse(yr <= 2015, totSalMR1 / instFtMR1,  totSalMR1 / instTotMR1), 
+    avgSalMR2 = ifelse(yr <= 2015, totSalMR2 / instFtMR2,  totSalMR2 / instTotMR2), 
+    avgSalMR3 = ifelse(yr <= 2015, totSalMR3 / instFtMR3,  totSalMR3 / instTotMR3), 
+    avgSalMR4 = ifelse(yr <= 2015, totSalMR4 / instFtMR4,  totSalMR4 / instTotMR4), 
+    avgSalMR5 = ifelse(yr <= 2015, totSalMR5 / instFtMR5,  totSalMR5 / instTotMR5), 
+    avgSalMR6 = ifelse(yr <= 2015, totSalMR6 / instFtMR6,  totSalMR6 / instTotMR6), 
+    avgSalMR7 = ifelse(yr <= 2015, totSalMR7 / instFtMR7,  totSalMR7 / instTotMR7), 
+
+    avgSalWR1 = ifelse(yr <= 2015, totSalWR1 / instFtWR1,  totSalWR1 / instTotWR1), 
+    avgSalWR2 = ifelse(yr <= 2015, totSalWR2 / instFtWR2,  totSalWR2 / instTotWR2), 
+    avgSalWR3 = ifelse(yr <= 2015, totSalWR3 / instFtWR3,  totSalWR3 / instTotWR3), 
+    avgSalWR4 = ifelse(yr <= 2015, totSalWR4 / instFtWR4,  totSalWR4 / instTotWR4), 
+    avgSalWR5 = ifelse(yr <= 2015, totSalWR5 / instFtWR5,  totSalWR5 / instTotWR5), 
+    avgSalWR6 = ifelse(yr <= 2015, totSalWR6 / instFtWR6,  totSalWR6 / instTotWR6), 
+    avgSalWR7 = ifelse(yr <= 2015, totSalWR7 / instFtWR7,  totSalWR7 / instTotWR7)
+  )
 
   beep(3) # Tell me when its done
 
@@ -120,20 +128,29 @@ mdf_clean %<>%
 # plot avg salaries to see if they look reasonable
 
 mdf_plot <- mdf_clean %>% 
+  mutate(
+    instTotTR1 = ifelse(yr <= 2015, instFtTR2, instTotTR2)
+  ) %>%
   group_by(yr) %>% 
   summarise(
-    avgSal1 = mean(avgSal9MoeqTR1[!is.na(avgSal9MoeqTR1) & avgSal9MoeqTR1 > 0], na.rm = TRUE),
-    avgSal2 = mean(avgSal9MoeqTR2[!is.na(avgSal9MoeqTR2) & avgSal9MoeqTR2 > 0], na.rm = TRUE),
-    avgSal3 = mean(avgSal9MoeqTR3[!is.na(avgSal9MoeqTR3) & avgSal9MoeqTR3 > 0], na.rm = TRUE),
-    avgSal4 = mean(avgSal9MoeqTR4[!is.na(avgSal9MoeqTR4) & avgSal9MoeqTR4 > 0], na.rm = TRUE),
-    avgSal5 = mean(avgSal9MoeqTR5[!is.na(avgSal9MoeqTR5) & avgSal9MoeqTR5 > 0], na.rm = TRUE),
-    avgSal6 = mean(avgSal9MoeqTR6[!is.na(avgSal9MoeqTR6) & avgSal9MoeqTR6 > 0], na.rm = TRUE),
-    avgSal7 = mean(avgSal9MoeqTR7[!is.na(avgSal9MoeqTR7) & avgSal9MoeqTR7 > 0], na.rm = TRUE)
+    avgSal1 = mean(avgSalTR1, na.rm = TRUE),
+    avgSal2 = mean(avgSalTR2, na.rm = TRUE),
+    avgSal3 = mean(avgSalTR3, na.rm = TRUE),
+    avgSal4 = mean(avgSalTR4, na.rm = TRUE),
+    avgSal5 = mean(avgSalTR5, na.rm = TRUE),
+    avgSal6 = mean(avgSalTR6, na.rm = TRUE),
+    avgSal7 = mean(avgSalTR7, na.rm = TRUE), 
+
+    totSal1 = mean(totSalTR1, na.rm =TRUE), 
+    instTot = mean(instTotTR1, na.rm=TRUE),
+    instFt = mean(instFtTR1, na.rm = TRUE), 
+    ft = mean(instFtTR2, na.rm =TRUE), 
+    tot = mean(instTotTR2, na.rm=TRUE)
   ) %>%
   pivot_longer(cols = starts_with("avgSal"), names_to = "Rank", values_to = "AvgSalary")
 
 
-ggplot(mdf_plot, aes(x = yr, y = AvgSalary, color = Rank)) +
+ggplot(mdf_plot, aes(x = yr, y = AvgSalary, color = Rank)) + # this one looks fucked because instTot is fucked
   geom_point() +
   geom_line() +
   labs(color = "Rank") +
@@ -141,6 +158,24 @@ ggplot(mdf_plot, aes(x = yr, y = AvgSalary, color = Rank)) +
 
 # There is a shift after 2011, which is when the data reporting shifts
 # Remember that pre 2012, salaries are annual, and after salaries are monthly * 9. What if not everyone is on a 9 month contract?
+
+ggplot(mdf_plot, aes(x = yr, y = totSal1)) + # This one looks normal
+geom_point()+
+geom_line()
+
+ggplot(mdf_plot, aes(x = yr, y = instTot)) + # Why is the avg num of staff so low between 2005-2011?
+geom_point()+
+geom_line()
+
+ggplot(mdf_plot, aes(x = yr, y = ft)) + # Why is this the same as the above one??
+geom_point()+
+geom_line()
+
+ggplot(mdf_plot, aes(x = yr, y = tot)) + # 2015 and earlier, instTot is not reported
+geom_point()+
+geom_line()
+
+
 
 ```
 
