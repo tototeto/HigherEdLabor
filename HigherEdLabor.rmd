@@ -170,6 +170,7 @@ geom_line()
 ggplot(mdf_plot, aes(x = yr, y = ft)) + # Why is this the same as the above one??
 geom_point()+
 geom_line()
+# its because instTot isnt pulling from the right access table for those years
 
 ggplot(mdf_plot, aes(x = yr, y = tot)) + # 2015 and earlier, instTot is not reported
 geom_point()+
