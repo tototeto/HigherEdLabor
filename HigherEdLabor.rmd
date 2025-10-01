@@ -17,7 +17,10 @@ setwd("C:/Working_Projects/HigherEdLabor")
 
 # Load Data
 union <- read.csv("Written Data/union.csv")
-pay <- read.csv("Written Data/combined_table.csv")
+pay <- read.csv("C:/Working_Projects/Research-Data-Storage/Data/IPEDS/combined_table.csv")
+
+beep(1)
+print("Setup Complete")
 
 ```
 
@@ -59,10 +62,30 @@ merged_data <- merged_data %>%
 # Clean data frame so only 1 row per inst. year.
 # Need different CBA dates for different union comps at same school
 
-indicators <- c("ft", "pt", "ttt", "ntt", "af_cba_n", "af_cba_t", "cba_date_t", "cba_date_n")
-nonind <- setdiff(names(merged_data), c("unitid", "yr", indicators))
+indicators <- c(
+  "ft", "pt", "ttt", "ntt", "af_cba_n", "af_cba_t", "cba_date_t", "cba_date_n", "carnegie", "sector", "hasMedSchool", "hbcu",
+  "tribal", "hasVet", "hasLaw", "hasEngineering", "hasDentistry", "hasBusiness"
+)
 
+faculty <- c(
+  "instTotTR1", "instTotTR2", "instTotTR3", "instTotTR4", "instTotTR5", "instTotTR6", "instTotTR7",
+  "instFtTR1", "instFtTR2", "instFtTR3", "instFtTR4", "instFtTR5", "instFtTR6", "instFtTR7",
+  "instTotMR1", "instTotMR2", "instTotMR3", "instTotMR4", "instTotMR5", "instTotMR6", "instTotMR7",
+  "instFtMR1", "instFtMR2", "instFtMR3", "instFtMR4", "instFtMR5", "instFtMR6", "instFtMR7",
+  "instTotWR1", "instTotWR2", "instTotWR3", "instTotWR4", "instTotWR5", "instTotWR6", "instTotWR7",
+  "instFtWR1", "instFtWR2", "instFtWR3", "instFtWR4", "instFtWR5", "instFtWR6", "instFtWR7",
+  "avgSal9MoeqTR1", "avgSal9MoeqTR2", "avgSal9MoeqTR3", "avgSal9MoeqTR4", "avgSal9MoeqTR5", "avgSal9MoeqTR6", "avgSal9MoeqTR7",
+  "avgSal9MoeqMR1", "avgSal9MoeqMR2", "avgSal9MoeqMR3", "avgSal9MoeqMR4", "avgSal9MoeqMR5", "avgSal9MoeqMR6", "avgSal9MoeqMR7",
+  "avgSal9MoeqWR1", "avgSal9MoeqWR2", "avgSal9MoeqWR3", "avgSal9MoeqWR4", "avgSal9MoeqWR5", "avgSal9MoeqWR6", "avgSal9MoeqWR7"
+)
 
+keepers <- c("unitid", "yr", "institutionName", "stateCode", "city", "x")
+
+nonind <- setdiff(names(merged_data), c(keepers, indicators, faculty))
+
+# This MIGHT BE WRONG.
+# Gets rid of duplicate rows by summing things like different contract types 
+# and takes the max of any indicator in a yr
 mdf_clean <- merged_data %>% 
   mutate(af_cba_t = ifelse(after_cba_date==1 & ttt==1, 1, 0),
          af_cba_n = ifelse(after_cba_date==1 & ntt==1, 1, 0),
@@ -72,6 +95,8 @@ mdf_clean <- merged_data %>%
          ) %>% 
   group_by(unitid, yr) %>% 
   summarise(across(all_of(nonind), first),
+            across(all_of(faculty), sum),
+            across(all_of(keepers), first),
             across(all_of(indicators), max),
             .groups = "drop")
   
@@ -119,7 +144,8 @@ mdf_clean %<>%
     avgSalWR7 = ifelse(yr <= 2015, totSalWR7 / instFtWR7,  totSalWR7 / instTotWR7)
   )
 
-  beep(3) # Tell me when its done
+  beep(1) # Tell me when its done
+  print("Data Cleaning Complete")
 
 ```
 
@@ -129,7 +155,7 @@ mdf_clean %<>%
 
 mdf_plot <- mdf_clean %>% 
   mutate(
-    instTotTR1 = ifelse(yr <= 2015, instFtTR2, instTotTR2)
+    instTotTR1 = ifelse(yr <= 2015, instFtTR1, instTotTR1)
   ) %>%
   group_by(yr) %>% 
   summarise(
@@ -144,8 +170,8 @@ mdf_plot <- mdf_clean %>%
     totSal1 = mean(totSalTR1, na.rm =TRUE), 
     instTot = mean(instTotTR1, na.rm=TRUE),
     instFt = mean(instFtTR1, na.rm = TRUE), 
-    ft = mean(instFtTR2, na.rm =TRUE), 
-    tot = mean(instTotTR2, na.rm=TRUE)
+    ft = mean(instFtTR1, na.rm =TRUE), 
+    tot = mean(instTotTR1, na.rm=TRUE)
   ) %>%
   pivot_longer(cols = starts_with("avgSal"), names_to = "Rank", values_to = "AvgSalary")
 
@@ -293,7 +319,7 @@ testdf <- mdf_clean %>%
     yr, 
     unitid, 
     institutionName, 
-    ugTot
-
+    ugTot, 
+    instTotTR1
   )
 ```
