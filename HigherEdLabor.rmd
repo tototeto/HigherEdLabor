@@ -207,20 +207,30 @@ ggplot(mdf_plot, aes(x = yr, y = AvgSalary, color = Rank)) + # I dont understand
 
 ggplot(mdf_plot, aes(x = yr, y = totSal1)) + # This one looks normal # NOT since removing CONTRACT from SQL
 geom_point()+
-geom_line()
+geom_line() +
+labs(title = "Average Total Salary Expenditure for All Faculty", 
+     y = "Total Salary Outlays (From totSalTR1)",
+     x = "Year"
+)
 
 ggplot(mdf_plot, aes(x = yr, y = instTot)) + # Why is the avg num of staff so low between 2005-2011? In testdf, instTot is NA through 2015
 geom_point()+
-geom_line()
+geom_line()+
+labs(title = "Average Total Number of Faculty", 
+     y = "Total Number of Faculty (From instTotTR1)",
+     x = "Year"
+)
 
 ggplot(mdf_plot, aes(x = yr, y = ft)) + # Why is this the same as the above one??
 geom_point()+
-geom_line()
-# its because instTot isnt pulling from the right access table for those years
+geom_line()+
+labs(title = "Average Total Number of Faculty", 
+     y = "Total Number of Faculty (From instFtTR1)",
+     x = "Year"
+)
+# its because instTot isnt pulling from the right access table for those years (2005-2011)
 
-ggplot(mdf_plot, aes(x = yr, y = tot)) + # 2015 and earlier, instTot is not reported
-geom_point()+
-geom_line()
+# 2015 and earlier, instTot is not reported
 
 
 
