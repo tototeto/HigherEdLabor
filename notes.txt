@@ -1,0 +1,31 @@
+10/8/2025
+Here is my best attempt to outline the problem
+
+IPEDS data for 2011 and earlier reports annual salaries by contract (9/10 mo or 11/12 mo or 9mo equated), 
+while 2012 and later reports monthly salaries not by contract.
+Originally we were multiplying everything by 9 to get a 9month contract, but that doesnt make sense for
+2011 and earlier, since reported salaries are not monthly.
+
+IPEDS data for 2015 and earlier doesnt report instTot, only instFt, so that (as far as I can tell) 
+instFt pre-2015 is the same as instTot post 2015
+
+To solve the salary reporting problem, I abandon using monthly salaries and instead get the total salaries 
+and divide by the total number of workers. This should give a measure of average annual salary by faculty rank.
+However, part of this process required me to aggregate across the different contracts for 2011 and earlier, 
+which I don't think I have to do post 2011. 
+
+I have been working on fixing 2005 data before applying the fix to other years
+
+Now, I have some issues that I don't know how to explain:
+
+total salaries should not be super different, but in 2005 (where I aggregate different contracts) it is huge. 
+However, instFt is also weirdly huge, and the resulting avgSal is remarkably in line with other years, despite being calculated differently. It seems 
+like there are people represented in this data (2005) who are NOT represented in other years, but I don't know why.
+Additionally, my plot of salaries by rank looks super strange and I don't know why because the data it uses doesn't look nearly as bad
+
+Finally, some issues I haven't gotten to at all yet are:
+- missing data for 2009 for some reason?
+- "invalid number" for instFt 2008-2011 (this might be fixed if I do for these years what i did for 2005)
+
+KEATON MEETING:
+work on year right before the change: 2010

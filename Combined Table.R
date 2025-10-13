@@ -4,7 +4,7 @@ library(ggplot2)
 library(beepr)
 
 q2004 <- read.csv("C:/Working_Projects/Research-Data-Storage/Data/IPEDS/2004.csv")
-q2005 <- read.csv("C:/Working_Projects/Research-Data-Storage/Data/IPEDS/2005.csv")
+q2005 <- read.csv("C:/Working_Projects/Research-Data-Storage/Data/IPEDS/2005m.csv")
 q2006 <- read.csv("C:/Working_Projects/Research-Data-Storage/Data/IPEDS/2006.csv")
 q2007 <- read.csv("C:/Working_Projects/Research-Data-Storage/Data/IPEDS/2007.csv")
 q2008 <- read.csv("C:/Working_Projects/Research-Data-Storage/Data/IPEDS/2008.csv")
@@ -24,7 +24,7 @@ q2021 <- read.csv("C:/Working_Projects/Research-Data-Storage/Data/IPEDS/2021.csv
 q2022 <- read.csv("C:/Working_Projects/Research-Data-Storage/Data/IPEDS/2022.csv")
 
 q2004 <- mutate(q2004, YR = 2004)
-q2005 <- mutate(q2005, YR = 2005)
+q2005 <- mutate(q2005, YR = 2005, UNITID = q1_UNITID)
 q2006 <- mutate(q2006, YR = 2006)
 q2007 <- mutate(q2007, YR = 2007)
 q2008 <- mutate(q2008, YR = 2008)

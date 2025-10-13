@@ -26,6 +26,8 @@ print("Setup Complete")
 
 ```{r data_cleaning, cache=TRUE, warning=FALSE}
 
+# pay (combined_table) has one row per institution per year, union has multiple rows per institution per year (one for each union type)
+
 # Join the two data frames, keeping all rows from `pay` and matching multiple rows from `union`
 merged_data <- pay %>%
   left_join(union, by = "UNITID")
@@ -79,13 +81,23 @@ faculty <- c(
   "avgSal9MoeqWR1", "avgSal9MoeqWR2", "avgSal9MoeqWR3", "avgSal9MoeqWR4", "avgSal9MoeqWR5", "avgSal9MoeqWR6", "avgSal9MoeqWR7"
 )
 
-keepers <- c("unitid", "yr", "institutionName", "stateCode", "city", "x")
+keepers <- c("institutionName", "stateCode", "city", "x") # Removed "unitid", "yr", 
 
-nonind <- setdiff(names(merged_data), c(keepers, indicators, faculty))
+nonind <- setdiff(names(merged_data), c(indicators, "unitid", "yr")) # removed keepers and faculty
 
 # This MIGHT BE WRONG.
 # Gets rid of duplicate rows by summing things like different contract types 
+# ^ This should be irrelevant since we expect combined_table to have one row per inst year
 # and takes the max of any indicator in a yr
+#
+# Currently, merged_data is 1,000,000 lines, which is way more than we expect (in the 10,000s per year, a few hundred thousand total)
+# This is using all my RAM to look at, and means that more data cleaning is needed.
+# ^ Actually, MDF CLEAN is a reasonable length but with some missing data (2005-2006)
+#
+# Currently, the 2005-06 Access database has 7000 lines in HD, 37000 in SAL, and 445000 in the output table
+# It appears that this problem only exists for the years where i removed CONTRACT from SQL, 2005 and 2006
+#
+# After picking just one contract type, the data looks reasonable in length
 mdf_clean <- merged_data %>% 
   mutate(af_cba_t = ifelse(after_cba_date==1 & ttt==1, 1, 0),
          af_cba_n = ifelse(after_cba_date==1 & ntt==1, 1, 0),
@@ -95,8 +107,8 @@ mdf_clean <- merged_data %>%
          ) %>% 
   group_by(unitid, yr) %>% 
   summarise(across(all_of(nonind), first),
-            across(all_of(faculty), sum),
-            across(all_of(keepers), first),
+            #across(all_of(faculty), sum),
+            #across(all_of(keepers), first), 
             across(all_of(indicators), max),
             .groups = "drop")
   
@@ -151,7 +163,12 @@ mdf_clean %<>%
 
 ```{r data_vis, cache=TRUE, warning=FALSE}
 
+
+
 # plot avg salaries to see if they look reasonable
+
+## Data Prep
+#--------------------------------------------
 
 mdf_plot <- mdf_clean %>% 
   mutate(
@@ -176,7 +193,10 @@ mdf_plot <- mdf_clean %>%
   pivot_longer(cols = starts_with("avgSal"), names_to = "Rank", values_to = "AvgSalary")
 
 
-ggplot(mdf_plot, aes(x = yr, y = AvgSalary, color = Rank)) + # this one looks fucked because instTot is fucked
+## Plot
+#--------------------------------------------
+
+ggplot(mdf_plot, aes(x = yr, y = AvgSalary, color = Rank)) + # I dont understand why this is fucked, it doesnt look like the data??
   geom_point() +
   geom_line() +
   labs(color = "Rank") +
@@ -185,11 +205,11 @@ ggplot(mdf_plot, aes(x = yr, y = AvgSalary, color = Rank)) + # this one looks fu
 # There is a shift after 2011, which is when the data reporting shifts
 # Remember that pre 2012, salaries are annual, and after salaries are monthly * 9. What if not everyone is on a 9 month contract?
 
-ggplot(mdf_plot, aes(x = yr, y = totSal1)) + # This one looks normal
+ggplot(mdf_plot, aes(x = yr, y = totSal1)) + # This one looks normal # NOT since removing CONTRACT from SQL
 geom_point()+
 geom_line()
 
-ggplot(mdf_plot, aes(x = yr, y = instTot)) + # Why is the avg num of staff so low between 2005-2011?
+ggplot(mdf_plot, aes(x = yr, y = instTot)) + # Why is the avg num of staff so low between 2005-2011? In testdf, instTot is NA through 2015
 geom_point()+
 geom_line()
 
@@ -320,6 +340,40 @@ testdf <- mdf_clean %>%
     unitid, 
     institutionName, 
     ugTot, 
-    instTotTR1
+    instTotTR1, 
+    totSalTR1, 
+    instFtTR1, 
+    avgSalTR1
+  )%>% 
+  mutate ( 
+    avgSal = totSalTR1 / instFtTR1
   )
+
+
+testdf2 <- merged_data %>% 
+  filter(
+    #institutionName == "University of Oregon"
+    unitid == 100654
+  ) %>% 
+  select(
+    avgSal9MoeqTR1, 
+    yr, 
+    unitid, 
+    institutionName, 
+    ugTot, 
+    instTotTR1
+  ) 
+testdf3 <- pay %>% 
+  filter(
+    #institutionName == "University of Oregon"
+    UNITID == 100654
+  ) %>% 
+  select(
+    YR, 
+    UNITID, 
+    inst_ft_m_r1, 
+    inst_tot_t_r1
+  )
+
+
 ```
