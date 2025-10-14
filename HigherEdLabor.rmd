@@ -156,6 +156,17 @@ mdf_clean %<>%
     avgSalWR7 = ifelse(yr <= 2015, totSalWR7 / instFtWR7,  totSalWR7 / instTotWR7)
   )
 
+  mdf_clean %<>% 
+    mutate(
+      logsal1 = log(avgSalTR1),
+      logsal2 = log(avgSalTR2),
+      logsal3 = log(avgSalTR3),
+      logsal4 = log(avgSalTR4),
+      logsal5 = log(avgSalTR5),
+      logsal6 = log(avgSalTR6),
+      logsal7 = log(avgSalTR7)
+    )
+
   beep(1) # Tell me when its done
   print("Data Cleaning Complete")
 
@@ -201,7 +212,10 @@ mdf_plot <- mdf_clean %>%
 ggplot(mdf_plot, aes(x = yr, y = AvgSalary, color = Rank)) + # I dont understand why this is fucked, it doesnt look like the data??
   geom_point() +
   geom_line() +
-  labs(color = "Rank") +
+  labs(color = "Rank",
+       title = "Average Salary by Rank",
+       y = "Average Salary",
+       x = "Year") +
   geom_vline(xintercept = 2011) 
 
 # There is a shift after 2011, which is when the data reporting shifts
@@ -248,6 +262,31 @@ labs(title = "Average Salary by Dividing Total Salary by Total Faculty",
 
 ```
 
+```{r test_regression, cache=TRUE, warning=FALSE}
+# Lets see if the data is statistically different after 2011
+
+mdf_reg <- mdf_clean %>%
+  mutate(post2011 = ifelse(yr > 2011, 1, 0))
+
+models <- lapply(c("avgSalTR1", "avgSalTR2", "avgSalTR3", "avgSalTR4", "avgSalTR5", "avgSalTR6", "avgSalTR7"), function(outcome) {
+  feols(as.formula(paste("log(", outcome, ") ~ post2011")), data = mdf_reg, vcov = "hetero")
+})
+
+modelsummary(
+  models,
+  title = "Post-2011 Treatment Effect",
+  output = "gt",
+  shape = term ~ model,
+  stars = TRUE
+)
+
+# Significance here tells us that there is likely something different about the data after 2011
+# I can't find anything in post-2011 data that explains this
+
+# Also, when i change the year for this indicator, the results do not change
+
+```
+
 ```{r balance_table, cache=TRUE, warning=FALSE}
 pre_survey_vars <- c(
   "f1AEndowment",
@@ -261,12 +300,13 @@ pre_survey_vars <- c(
   "instTotTR4",
   "instTotTR5",
   "instTotTR6",
-  "instTotTR7"
+  "instTotTR7",
+  "avgSalTR1"
 )
 
 
 models <- lapply(pre_survey_vars, function(var) {
-  feols(as.formula(paste("log(",var, ")~ cba_ever")), data = mdf_clean %>% filter(after_cba_date == 0), vcov = "hetero")
+  feols(as.formula(paste("log(",var, ")~ cba_ever")), data = mdf_clean , vcov = "hetero")
 })
 names(models) <- pre_survey_vars
 
@@ -281,7 +321,7 @@ modelsummary(
 
 ```{r pre_trends, cache=TRUE, warning=FALSE}
 
-outcomes <- c("avgSal9MoeqTR1", "avgSal9MoeqTR2", "avgSal9MoeqTR3", "avgSal9MoeqTR4", "avgSal9MoeqTR5", "avgSal9MoeqTR6", "avgSal9MoeqTR7" )
+outcomes <- c("avgSalTR1", "avgSalTR2", "avgSalTR3", "avgSalTR4", "avgSalTR5", "avgSalTR6", "avgSalTR7" )
 
 models_pt <- lapply(outcomes, function(out) {
   feols(
@@ -309,20 +349,31 @@ mdf_sum <- mdf_clean %>%
   filter(!(after_cba_date)) %>% 
   group_by(cba_ever, yr) %>%
   summarise(
-    tr1 = mean(avgSal9MoeqTR1, na.rm = TRUE),
-    tr2 = mean(avgSal9MoeqTR2, na.rm = TRUE),
-    tr3 = mean(avgSal9MoeqTR3, na.rm = TRUE),
-    tr4 = mean(avgSal9MoeqTR4, na.rm = TRUE),
-    tr5 = mean(avgSal9MoeqTR5, na.rm = TRUE),
-    tr6 = mean(avgSal9MoeqTR6, na.rm = TRUE),
-    tr7 = mean(avgSal9MoeqTR7, na.rm = TRUE)
+    tr1 = mean(avgSalTR1, na.rm = TRUE),
+    tr2 = mean(avgSalTR2, na.rm = TRUE),
+    tr3 = mean(avgSalTR3, na.rm = TRUE),
+    tr4 = mean(avgSalTR4, na.rm = TRUE),
+    tr5 = mean(avgSalTR5, na.rm = TRUE),
+    tr6 = mean(avgSalTR6, na.rm = TRUE),
+    tr7 = mean(avgSalTR7, na.rm = TRUE)
   ) 
 
 
-lapply(c("tr1", "tr2", "tr3", "tr4", "tr5", "tr6", "tr7"), function(out) {
+plotsout <- lapply(c("tr1", "tr2", "tr3", "tr4", "tr5", "tr6", "tr7"), function(out) {
   ggplot(mdf_sum,aes(x = yr))+
   geom_smooth(aes(y = log(!!sym(out)), color = factor(cba_ever)))
 })
+
+# Don't forget that this puts out several plots
+
+
+plotsout[1]
+plotsout[2]
+plotsout[3]
+plotsout[4]
+plotsout[5]
+plotsout[6]
+plotsout[7]
 
 ```
 
@@ -337,7 +388,7 @@ dep_vars <- c(
   "logsal7"
   )
 
-lapply(dep_vars, function(dep){
+plotsout <- lapply(dep_vars, function(dep){
   ggdid(aggte(att_gt(yname = dep,
                      tname = "yr",
                      idname = "unitid",
@@ -348,6 +399,40 @@ lapply(dep_vars, function(dep){
                      data = mdf_clean), type = "dynamic", na.rm=TRUE), title = dep)
 
 })
+
+plotsout[1]
+plotsout[2]
+plotsout[3]
+plotsout[4]
+plotsout[5]
+plotsout[6]
+plotsout[7]
+```
+
+```{r regressions, cache=TRUE, warning=FALSE}
+# Regressions for each type of union
+tr1g <- feols(log(avgSalTR1) ~after_cba_date |  yr + unitid, data = mdf_clean ) #tr1g denotes total (m+f) group 1 (all) grouped by union type
+tr2g <- feols(log(avgSalTR2) ~af_cba_t |  yr + unitid, data = mdf_clean )
+tr3g <- feols(log(avgSalTR3) ~af_cba_t |  yr + unitid, data = mdf_clean )
+tr4g <- feols(log(avgSalTR4) ~af_cba_t |  yr + unitid, data = mdf_clean )
+tr5g <- feols(log(avgSalTR5) ~af_cba_n |  yr + unitid, data = mdf_clean )
+tr6g <- feols(log(avgSalTR6) ~af_cba_n |  yr + unitid, data = mdf_clean )
+tr7g <- feols(log(avgSalTR7) ~af_cba_n |  yr + unitid, data = mdf_clean )
+
+modelsummary(list("All instructional staff" = tr1g,
+                  "Professor" = tr2g,
+                  "Associate prof" = tr3g,
+                  "Assistant prof" = tr4g),
+             output = "kableExtra",
+             stars = TRUE,
+             title = "Tenior Track after CBA date")
+
+modelsummary(list("Instructor" = tr5g,
+                  "Lecturer"= tr6g,
+                  "No Rank" = tr7g),
+             output = "kableExtra",
+             stars = TRUE,
+             title = "Non Tenior Track after CBA date")
 ```
 
 ```{r test, cache=TRUE, warning=FALSE}
