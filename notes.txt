@@ -29,3 +29,8 @@ Finally, some issues I haven't gotten to at all yet are:
 
 KEATON MEETING:
 work on year right before the change: 2010
+
+10/14/2025
+At next meeting:
+- Explain issue with data after 2011, and why I don't understand how to fix it
+- Show plots and tables with current level of fixed data
