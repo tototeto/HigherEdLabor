@@ -161,6 +161,8 @@ mdf_clean %<>%
 
 ```
 
+
+
 ```{r data_vis, cache=TRUE, warning=FALSE}
 
 
@@ -232,6 +234,16 @@ labs(title = "Average Total Number of Faculty",
 
 # 2015 and earlier, instTot is not reported
 
+ggplot(mdf_plot %>% filter(Rank == "avgSal1"), aes(x = yr, y = AvgSalary)) +
+geom_point()+
+geom_line() +
+labs(title = "Average Salary by Dividing Total Salary by Total Faculty", 
+     y = "Average Salary",
+     x = "Year"
+) # Jump after 2011 because data is different! This looks good but its NOT
+
+
+# What if we make an indicator for "post2011" instead of trying to fix the data?
 
 
 ```
