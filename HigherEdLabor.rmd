@@ -484,3 +484,38 @@ testdf3 <- pay %>%
 
 
 ```
+
+## THESIS STUFF:
+
+```{r thesis, cache=TRUE, warning=FALSE}
+
+# Import csv of state legislation
+# Add legislation as a factor indicator (4 types) to each row
+# Regress endowment (may have to add from Access data) on legislation indicator with inst/yr fe
+# Also do DiD analysis since it makes more sense here
+
+thesis_treatment <- read.csv("../Thesis/transparency.csv")
+
+thesis_treatment %<>%
+  rename(stateCode = "scode")
+
+mdf_th <- mdf_clean %>% 
+  left_join(thesis_treatment, by = "stateCode")
+
+mdf_th %<>% 
+  mutate(
+    explicit = ifelse(Transparency == "Explicit", 1, 0),
+    Transparency = as.factor(Transparency) 
+         )
+
+mdf_th$Transparency <- relevel(mdf_th$Transparency, ref = "None")
+
+m1 <- feols(log(f1AEndowment) ~explicit |  yr , data = mdf_th , cluster = "stateCode", vcov = "hetero")
+m2 <- feols(log(f2Endowment) ~explicit |  yr, data = mdf_th , cluster = "stateCode", vcov = "hetero")
+
+modelsummary(list("Public" = m1,
+                  "Private" = m2),
+             output = "kableExtra",
+             stars = TRUE)
+
+```
