@@ -7,6 +7,14 @@ output: pdf_document
 
 Describe your issue very briefly here. Then show it with a minimal, self-contained example in the following R chunk.
 
+1 - Professor
+2 - Associate Professor
+3 - Assistant Professor
+4 - Instructor
+5 - Lecturer
+6 - No Rank
+7 - All Instructional Staff
+
 ```{r setup, cache=TRUE, warning=FALSE}
 
 # Load Packages
@@ -286,7 +294,7 @@ modelsummary(
 # Also, when i change the year for this indicator, the results do not change
 
 ```
-
+## Balance Table
 ```{r balance_table, cache=TRUE, warning=FALSE}
 pre_survey_vars <- c(
   "f1AEndowment",
@@ -318,7 +326,7 @@ modelsummary(
   stars = TRUE
 )
 ```
-
+ ## Pre-Trends Plots
 ```{r pre_trends, cache=TRUE, warning=FALSE}
 
 outcomes <- c("avgSalTR1", "avgSalTR2", "avgSalTR3", "avgSalTR4", "avgSalTR5", "avgSalTR6", "avgSalTR7" )
@@ -411,25 +419,25 @@ plotsout[7]
 
 ```{r regressions, cache=TRUE, warning=FALSE}
 # Regressions for each type of union
-tr1g <- feols(log(avgSalTR1) ~after_cba_date |  yr + unitid, data = mdf_clean ) #tr1g denotes total (m+f) group 1 (all) grouped by union type
+tr1g <- feols(log(avgSalTR1) ~af_cba_t |  yr + unitid, data = mdf_clean ) #tr1g denotes total (m+f) group 1 (Profs) grouped by union type
 tr2g <- feols(log(avgSalTR2) ~af_cba_t |  yr + unitid, data = mdf_clean )
 tr3g <- feols(log(avgSalTR3) ~af_cba_t |  yr + unitid, data = mdf_clean )
-tr4g <- feols(log(avgSalTR4) ~af_cba_t |  yr + unitid, data = mdf_clean )
+tr4g <- feols(log(avgSalTR4) ~af_cba_n |  yr + unitid, data = mdf_clean )
 tr5g <- feols(log(avgSalTR5) ~af_cba_n |  yr + unitid, data = mdf_clean )
 tr6g <- feols(log(avgSalTR6) ~af_cba_n |  yr + unitid, data = mdf_clean )
-tr7g <- feols(log(avgSalTR7) ~af_cba_n |  yr + unitid, data = mdf_clean )
+tr7g <- feols(log(avgSalTR7) ~after_cba_date|  yr + unitid, data = mdf_clean )
 
-modelsummary(list("All instructional staff" = tr1g,
-                  "Professor" = tr2g,
-                  "Associate prof" = tr3g,
-                  "Assistant prof" = tr4g),
+modelsummary(list("Professors" = tr1g,
+                  "Associate Prof" = tr2g,
+                  "Assistant prof" = tr3g,
+                  "Instructor" = tr4g),
              output = "kableExtra",
              stars = TRUE,
              title = "Tenior Track after CBA date")
 
-modelsummary(list("Instructor" = tr5g,
-                  "Lecturer"= tr6g,
-                  "No Rank" = tr7g),
+modelsummary(list("Lecturer" = tr5g,
+                  "No Rank"= tr6g,
+                  "All Inst. Staff" = tr7g),
              output = "kableExtra",
              stars = TRUE,
              title = "Non Tenior Track after CBA date")
@@ -438,8 +446,8 @@ modelsummary(list("Instructor" = tr5g,
 ```{r test, cache=TRUE, warning=FALSE}
 testdf <- mdf_clean %>%
   filter(
-    #institutionName == "University of Oregon"
-    unitid == 100654
+    institutionName == "University of Oregon"
+    #unitid == 100654
   ) %>% 
   select(
     avgSal9MoeqTR1, 
@@ -447,13 +455,13 @@ testdf <- mdf_clean %>%
     unitid, 
     institutionName, 
     ugTot, 
-    instTotTR1, 
-    totSalTR1, 
-    instFtTR1, 
-    avgSalTR1
+    instTotTR7, 
+    totSalTR7, 
+    instFtTR7, 
+    avgSalTR7
   )%>% 
   mutate ( 
-    avgSal = totSalTR1 / instFtTR1
+    avgSal = totSalTR7 / instFtTR7
   )
 
 
