@@ -177,7 +177,16 @@ mdf_clean %<>%
 
   beep(1) # Tell me when its done
   print("Data Cleaning Complete")
+  
 
+  # FINDING
+  # post-2011 use FXInstructionalSalariesWages for total salary outlays
+  # post-2011 use tenuredFaculty +nonTenuredFaculty + tenureTrackFaculty for total faculty count
+
+  mdf_clean %<>% 
+    mutate( 
+      totSalOutlays
+    )
 ```
 
 
@@ -400,7 +409,7 @@ plotsout <- lapply(dep_vars, function(dep){
   ggdid(aggte(att_gt(yname = dep,
                      tname = "yr",
                      idname = "unitid",
-                     gname = "cba_date_n",
+                     gname = "cba_date_n", # FIX THIS! Handle differently for different union types
                      xformla = ~1,
                      est_method = "reg",
                      control_group = "notyettreated",
@@ -490,7 +499,11 @@ testdf3 <- pay %>%
     inst_tot_t_r1
   )
 
+# Make sure we have right number of observations
 
+ggplot(mdf_clean %>% group_by(unitid) %>% summarize(count = n()), aes(x = count)) + 
+  geom_histogram()
+# looks perfect, nothing shows up more than the number of years in the data
 ```
 
 ## THESIS STUFF:
@@ -518,12 +531,45 @@ mdf_th %<>%
 
 mdf_th$Transparency <- relevel(mdf_th$Transparency, ref = "None")
 
-m1 <- feols(log(f1AEndowment) ~explicit |  yr , data = mdf_th , cluster = "stateCode", vcov = "hetero")
-m2 <- feols(log(f2Endowment) ~explicit |  yr, data = mdf_th , cluster = "stateCode", vcov = "hetero")
+m1 <- feols(log(f1AEndowment) ~explicit |  yr , data = mdf_th , cluster = "stateCode")
+m2 <- feols(log(f2Endowment) ~explicit |  yr, data = mdf_th , cluster = "stateCode")
 
 modelsummary(list("Public" = m1,
                   "Private" = m2),
              output = "kableExtra",
              stars = TRUE)
+
+
+mdf_th <- mdf_th %>%
+  mutate(after_leg_year = ifelse(yr >= leg_year, 1, 0),
+         after_leg_year = ifelse(leg_year %>% is.na(), 0, after_leg_year)
+         ) %>%
+  mutate(leg_ever = ifelse(is.na(leg_year), 0, 1), 
+         leg_in_timeframe = ifelse(leg_ever == 1 & leg_year > 2004, 1, 0)) %>% 
+  mutate(t = yr - leg_year) 
+
+
+# Did 
+
+dep_vars <- c(
+  "f1AEndowment", 
+  "f2Endowment"
+  )
+
+plotsout <- lapply(dep_vars, function(dep){
+  ggdid(aggte(att_gt(yname = dep,
+                     tname = "yr",
+                     idname = "unitid",
+                     gname = "leg_year",
+                     xformla = ~1,
+                     est_method = "reg",
+                     control_group = "notyettreated",
+                     data = mdf_th), type = "dynamic", na.rm=TRUE), title = dep)
+
+})
+
+plotsout[1]
+plotsout[2]
+
 
 ```
