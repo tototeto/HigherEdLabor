@@ -18,7 +18,7 @@ Describe your issue very briefly here. Then show it with a minimal, self-contain
 ```{r setup, cache=TRUE, warning=FALSE}
 
 # Load Packages
-pacman::p_load(tidyverse, broom, janitor, readr, stargazer, skimr, tidymodels, magrittr,doParallel, fixest, modelsummary, kableExtra, did, gt, beepr)
+pacman::p_load(tidyverse, broom, janitor, readr, stargazer, skimr, tidymodels, magrittr,doParallel, fixest, modelsummary, kableExtra, did, gt, beepr, ggplot2, maps, synthdid, devtools, augsynth)
 
 # Set directory
 setwd("C:/Working_Projects/HigherEdLabor")
@@ -172,7 +172,8 @@ mdf_clean %<>%
       logsal4 = log(avgSalTR4),
       logsal5 = log(avgSalTR5),
       logsal6 = log(avgSalTR6),
-      logsal7 = log(avgSalTR7)
+      logsal7 = log(avgSalTR7), 
+      logTuition = ifelse(log(tuitionAndFees) == -Inf, NA, log(tuitionAndFees))
     )
 
   beep(1) # Tell me when its done
@@ -183,10 +184,9 @@ mdf_clean %<>%
   # post-2011 use FXInstructionalSalariesWages for total salary outlays
   # post-2011 use tenuredFaculty +nonTenuredFaculty + tenureTrackFaculty for total faculty count
 
-  mdf_clean %<>% 
-    mutate( 
-      totSalOutlays
-    )
+  write.csv(mdf_clean, "Written Data/mdf_clean.csv", row.names = FALSE)
+
+
 ```
 
 
@@ -277,6 +277,57 @@ labs(title = "Average Salary by Dividing Total Salary by Total Faculty",
 # What if we make an indicator for "post2011" instead of trying to fix the data?
 
 
+
+
+# Try plotting just one school
+mdf_solo <- mdf_clean %>% 
+  filter(institutionName == "Harvard University")
+
+
+ggplot(mdf_solo, aes(x = yr, y = avgSalTR7)) + 
+  geom_point()+
+  geom_line() +
+  labs(title = "Harvard University Average Salary All Profs", 
+       y = "Average Salary",
+       x = "Year"
+  )
+
+ggplot(mdf_solo, aes(x = yr, y = instFtTR7)) + 
+  geom_point()+
+  geom_line() +
+  labs(title = "Harvard University Full-Time Faculty Count", 
+       y = "Full-Time Faculty Count",
+       x = "Year"
+  )
+
+ggplot(mdf_solo, aes(x = yr, y = totSalTR7)) + 
+  geom_point()+
+  geom_line() +
+  labs(title = "Harvard University Total Salary All Profs", 
+       y = "Total Salary",
+       x = "Year"
+  )
+
+
+  # Plot share of units with af_cba_t == 1 over time
+  mdf_share <- mdf_clean %>% 
+    group_by(yr) %>%
+    summarise(
+      share_af_cba_t = mean(af_cba_t, na.rm = TRUE)
+    )
+
+  ggplot(mdf_share, aes(x = yr, y = share_af_cba_t)) +
+    geom_line() +
+    geom_point() +
+    labs(
+      title = "Share of Units with Tenure-Track CBA Over Time",
+      x = "Year",
+      y = "Share (af_cba_t == 1)"
+    ) +
+    scale_y_continuous(limits = c(0, 1)) +
+    theme_minimal()
+
+    test <- mdf_clean %>% filter(institutionName == "University of Oregon") %>% select(cbaDate, institutionName, af_cba_t, af_cba_n, yr)
 ```
 
 ```{r test_regression, cache=TRUE, warning=FALSE}
@@ -334,6 +385,10 @@ modelsummary(
   shape = model ~ term,
   stars = TRUE
 )
+
+
+
+
 ```
  ## Pre-Trends Plots
 ```{r pre_trends, cache=TRUE, warning=FALSE}
@@ -360,6 +415,18 @@ modelsummary(
     "t::-5" = "5 Years Before Treatment"
   )
 )
+
+# Summary Statistics
+lapply(outcomes, function(out) {
+  mdf_clean %>%
+    summarise(
+      mean = mean(get(out), na.rm = TRUE),
+      median = median(get(out), na.rm = TRUE),
+      sd = sd(get(out), na.rm = TRUE),
+      p10 = quantile(get(out), 0.1, na.rm = TRUE),
+      p90 = quantile(get(out), 0.9, na.rm = TRUE)
+    )
+})
 
 # Plot
 mdf_sum <- mdf_clean %>% 
@@ -394,7 +461,7 @@ plotsout[7]
 
 ```
 
-```{r did, cache=TRUE, warning=FALSE}
+```{r did, cache=TRUE, warning=FALSE, }
 dep_vars <- c(
   "logsal1", 
   "logsal2", 
@@ -405,11 +472,12 @@ dep_vars <- c(
   "logsal7"
   )
 
-plotsout <- lapply(dep_vars, function(dep){
+
+plotsout <- lapply(dep_vars[1:3], function(dep){
   ggdid(aggte(att_gt(yname = dep,
                      tname = "yr",
                      idname = "unitid",
-                     gname = "cba_date_n", # FIX THIS! Handle differently for different union types
+                     gname = "cba_date_t", 
                      xformla = ~1,
                      est_method = "reg",
                      control_group = "notyettreated",
@@ -417,24 +485,330 @@ plotsout <- lapply(dep_vars, function(dep){
 
 })
 
-plotsout[1]
-plotsout[2]
-plotsout[3]
-plotsout[4]
-plotsout[5]
-plotsout[6]
-plotsout[7]
+plotsout[4:6] <- lapply(dep_vars[4:6], function(dep){
+  ggdid(aggte(att_gt(yname = dep,
+                     tname = "yr",
+                     idname = "unitid",
+                     gname = "cba_date_n",
+                     xformla = ~1,
+                     est_method = "reg",
+                     control_group = "notyettreated",
+                     data = mdf_clean), type = "dynamic", na.rm=TRUE), title = dep)
+
+})
+
+plotsout[7]<- lapply(dep_vars[7], function(dep){
+  ggdid(aggte(att_gt(yname = dep,
+                     tname = "yr",
+                     idname = "unitid",
+                     gname = "cba_date_n", 
+                     xformla = ~1,
+                     est_method = "reg",
+                     control_group = "notyettreated",
+                     data = mdf_clean), type = "dynamic", na.rm=TRUE), title = dep)
+
+})
+
+# Get plots for tuition as well
+
+plotsout[[8]] <- ggdid(aggte(att_gt(yname = "logTuition",
+                     tname = "yr",
+                     idname = "unitid",
+                     gname = "cba_date_n", 
+                     xformla = ~1,
+                     est_method = "reg",
+                     control_group = "notyettreated",
+                     data = mdf_clean), type = "dynamic", na.rm=TRUE), title = "Tuition and Fees") + labs(title = "Tuition Effects from NT") + theme(
+    plot.title = element_text(
+      hjust = 0.5,      # centers the title
+      size = 18,        # makes it larger
+      face = "bold",     # optional: makes it bold
+      color = "black"
+    ),
+    axis.title = element_text(color = "black", face = "bold"),  # axis titles
+    axis.text  = element_text(color = "black")                  # tick labels
+ )+ theme(text = element_text(size = 50), plot.title = element_text(size = 60)) +
+  scale_x_continuous(breaks = seq(-16, 16, by = 4))
+
+plotsout[[9]] <- ggdid(aggte(att_gt(yname = "logTuition",
+                     tname = "yr",
+                     idname = "unitid",
+                     gname = "cba_date_t", 
+                     xformla = ~1,
+                     est_method = "reg",
+                     control_group = "notyettreated",
+                     data = mdf_clean), type = "dynamic", na.rm=TRUE), title = "Tuition and Fees") + labs(title = "Tuition Effects from TT") + theme(
+    plot.title = element_text(
+      hjust = 0.5,      # centers the title
+      size = 18,        # makes it larger
+      face = "bold",     # optional: makes it bold
+      color = "black"
+    ),
+    axis.title = element_text(color = "black", face = "bold"),  # axis titles
+    axis.text  = element_text(color = "black")                  # tick labels
+ )+ theme(text = element_text(size = 50), plot.title = element_text(size = 60)) +
+  scale_x_continuous(breaks = seq(-16, 16, by = 4))
+
+titles <- c(
+  "Full Professors",
+  "Associate Professors",
+  "Assistant Professors",
+  "Instructors",
+  "Lecturers",
+  "No Rank",
+  "All Instructional Staff",
+  "Tuition Effects from NT", 
+  "Tuition Effects from TT"
+)
+  
+
+for(p in 1:length(titles)){
+
+  df = plotsout[[p]]$data
+
+  df$lower <- df$att - 1.96 * df$att.se
+  df$upper <- df$att + 1.96 * df$att.se
+
+  # Layer 1 = error bars
+  plotsout[[p]]$layers[[1]]$aes_params$linewidth <- 3   # thicker error bars
+  plotsout[[p]]$layers[[1]]$aes_params$width = 0  # change color
+
+  # Layer 2 = points
+  plotsout[[p]]$layers[[2]]$aes_params$size <- 1         # larger points
+
+
+  ggsave(filename = paste0("plot_", titles[p], ".png"),
+    plot = plotsout[[p]]+ labs(title = titles[p], subtitle = paste0("Mean Estimate: ", round(mean(df$att), 4), " Mean SE : ", round(mean(df$att.se), 4))) + theme(
+    plot.title = element_text(
+      hjust = 0.5,      # centers the title
+      size = 18,        # makes it larger
+      face = "bold",     # optional: makes it bold
+      color = "black"
+    ),
+    plot.subtitle = element_text(
+      hjust = 0.5,
+      size = 16,
+      color = "black"
+    ),
+    axis.title = element_text(color = "black", face = "bold"),  # axis titles
+    axis.text  = element_text(color = "black")                  # tick labels
+  )+ theme(text = element_text(size = 40), plot.title = element_text(size = 45), plot.subtitle = element_text(size = 35)) +
+  scale_x_continuous(breaks = seq(-16, 16, by = 4))
+  ,
+   width = 12, height = 6, dpi = 300
+  ) 
+
+}
+# Use ggsave or aspect_ratio
+
+plotsout[[1]] + labs(title = "Full Professors") + theme(
+    plot.title = element_text(
+      hjust = 0.5,      # centers the title
+      size = 18,        # makes it larger
+      face = "bold",     # optional: makes it bold
+      color = "black"
+    ),
+    axis.title = element_text(color = "black", face = "bold"),  # axis titles
+    axis.text  = element_text(color = "black")                  # tick labels
+  )+ theme(text = element_text(size = 50), plot.title = element_text(size = 60)) +
+  scale_x_continuous(breaks = seq(-16, 16, by = 4))
+
+plotsout[[2]] + labs(title = "Associate Professors") + theme(
+    plot.title = element_text(
+      hjust = 0.5,      # centers the title
+      size = 18,        # makes it larger
+      face = "bold",     # optional: makes it bold
+      color = "black"
+    ),
+    axis.title = element_text(color = "black", face = "bold"),  # axis titles
+    axis.text  = element_text(color = "black")                  # tick labels
+ )+ theme(text = element_text(size = 50), plot.title = element_text(size = 60)) +
+  scale_x_continuous(breaks = seq(-16, 16, by = 4))
+
+
+plotsout[[3]] + labs(title = "Assistant Professors") + theme(
+    plot.title = element_text(
+      hjust = 0.5,      # centers the title
+      size = 18,        # makes it larger
+      face = "bold",     # optional: makes it bold
+      color = "black"
+    ),
+    axis.title = element_text(color = "black", face = "bold"),  # axis titles
+    axis.text  = element_text(color = "black")                  # tick labels
+ )+ theme(text = element_text(size = 50), plot.title = element_text(size = 60)) +
+  scale_x_continuous(breaks = seq(-16, 16, by = 4))
+
+  
+plotsout[[4]] + labs(title = "Instructors") + theme(
+    plot.title = element_text(
+      hjust = 0.5,      # centers the title
+      size = 18,        # makes it larger
+      face = "bold",     # optional: makes it bold
+      color = "black"
+    ),
+    axis.title = element_text(color = "black", face = "bold"),  # axis titles
+    axis.text  = element_text(color = "black")                  # tick labels
+ )+ theme(text = element_text(size = 50), plot.title = element_text(size = 60)) +
+  scale_x_continuous(breaks = seq(-16, 16, by = 4))
+
+  
+plotsout[[5]] + labs(title = "Lecturers") + theme(
+    plot.title = element_text(
+      hjust = 0.5,      # centers the title
+      size = 18,        # makes it larger
+      face = "bold",     # optional: makes it bold
+      color = "black"
+    ),
+    axis.title = element_text(color = "black", face = "bold"),  # axis titles
+    axis.text  = element_text(color = "black")                  # tick labels
+ )+ theme(text = element_text(size = 50), plot.title = element_text(size = 60)) +
+  scale_x_continuous(breaks = seq(-16, 16, by = 4))
+
+plotsout[[6]] + labs(title = "No Rank") + theme(
+    plot.title = element_text(
+      hjust = 0.5,      # centers the title
+      size = 18,        # makes it larger
+      face = "bold",     # optional: makes it bold
+      color = "black"
+    ),
+    axis.title = element_text(color = "black", face = "bold"),  # axis titles
+    axis.text  = element_text(color = "black")                  # tick labels
+ )+ theme(text = element_text(size = 50), plot.title = element_text(size = 60)) +
+  scale_x_continuous(breaks = seq(-16, 16, by = 4))
+
+  
+plotsout[[7]] + labs(title = "All Instructional Staff") + theme(
+    plot.title = element_text(
+      hjust = 0.5,      # centers the title
+      size = 18,        # makes it larger
+      face = "bold",     # optional: makes it bold
+      color = "black"
+    ),
+    axis.title = element_text(color = "black", face = "bold"),  # axis titles
+    axis.text  = element_text(color = "black")                  # tick labels
+ )+ theme(text = element_text(size = 50), plot.title = element_text(size = 60)) +
+  scale_x_continuous(breaks = seq(-16, 16, by = 4))
+
+  
+
+
+plotsout[[8]]
+
+```
+
+```{r mdfclean, cache=TRUE, warning=FALSE}
+
+pacman::p_load(tidyverse, broom, janitor, readr, stargazer, skimr, tidymodels, magrittr,doParallel, fixest, modelsummary, kableExtra, did, gt, beepr, ggplot2, maps, synthdid, devtools, augsynth)
+setwd("C:/Working_Projects/HigherEdLabor")
+
+mdf_clean <- read.csv("Written Data/mdf_clean.csv")
+beep(1)
+
+```
+
+```{r synthdid, cache=TRUE, warning=FALSE}
+red = c("University of Oregon", "Oregon State University", "Portland State University", "University of Utah", "Utah State University", "Brigham Young University")
+
+mdf_aug_1 %>%
+  group_by(unitid) %>%
+  summarise(
+    pre_periods = sum(yr < min(yr[af_cba_t == 1], na.rm = TRUE))
+  ) %>%
+  summary()
+
+  mdf_aug_1 %>%
+  group_by(unitid) %>%
+  summarise(
+    ever_treated = any(af_cba_t == 1, na.rm = TRUE)
+  ) %>%
+  table()
+
+bad_units <- c(133526,134510,192147,202480,202514,210775,237640,376224, 133553,133979,134945,136701,186618,192165,202523,202541,210809,237686,376321)
+# Remove always treated
+
+mdf_clean %>% 
+  group_by(unitid) %>% 
+  mutate(always_treated = ifelse(all(af_cba_t == 1) | all(af_cba_n == 1), 1, 0), 
+    logsal = log(avgSalTR1)) %>% 
+  ungroup() %>% 
+  filter(
+    always_treated == 0, cbaDate < 2019 | is.na(cbaDate), 
+    cbaDate > 2005 | is.na(cbaDate),
+    ugTot > 100) %>% 
+  select(
+    unitid, institutionName, yr, cbaDate, stateCode, af_cba_t, af_cba_n, logsal1, logsal2, logsal3, logsal4, logsal5, logsal6, logsal7, ugTot, instFtTR7
+  )  -> mdf_aug
+
+  mdf_aug_1 <- mdf_aug %>% filter((logsal1 != -Inf), !is.na(logsal1), logsal1 != "Invalid Number")
+  mdf_aug_2 <- mdf_aug %>% filter((logsal2 != -Inf), !is.na(logsal2), logsal2 != "Invalid Number")
+  mdf_aug_3 <- mdf_aug %>% filter((logsal3 != -Inf), !is.na(logsal3), logsal3 != "Invalid Number")
+  mdf_aug_4 <- mdf_aug %>% filter((logsal4 != -Inf), !is.na(logsal4), logsal4 != "Invalid Number")
+  mdf_aug_5 <- mdf_aug %>% filter((logsal5 != -Inf), !is.na(logsal5), logsal5 != "Invalid Number")
+  mdf_aug_6 <- mdf_aug %>% filter((logsal6 != -Inf), !is.na(logsal6), logsal6 != "Invalid Number")
+  mdf_aug_7 <- mdf_aug %>% filter((logsal7 != -Inf), !is.na(logsal7), logsal7 != "Invalid Number")
+
+  mdf_aug %>% group_by(unitid) %>% summarise(
+    ever_treated_t = any(af_cba_t == 1, na.rm = TRUE),
+    ever_treated_n = any(af_cba_n == 1, na.rm = TRUE)
+  ) %>% ungroup() %>% filter(ever_treated_t == TRUE | ever_treated_n == TRUE) %>% nrow()
+
+
+  synthmod <- multisynth(logsal1 ~ af_cba_t, unitid, yr, data = mdf_aug_1, fixedeff = FALSE, time_cohort = FALSE) 
+  plot(synthmod %>% summary())
+
+  synthmod2 <- multisynth(logsal2 ~ af_cba_t , unitid, yr, data = mdf_aug_2, fixedeff = FALSE, time_cohort = FALSE) 
+  plot(synthmod2 %>% summary())
+
+  synthmod3 <- multisynth(logsal3 ~ af_cba_t , unitid, yr, data = mdf_aug_3, fixedeff = FALSE, time_cohort = FALSE) 
+  plot(synthmod3 %>% summary())
+
+  synthmod4 <- multisynth(logsal4 ~ af_cba_n , unitid, yr, data = mdf_aug_4, fixedeff = FALSE, time_cohort = FALSE) 
+  plot(synthmod4 %>% summary())
+
+  # 5 breaks idk why
+  synthmod5 <- multisynth(logsal5 ~ af_cba_n , unitid, yr, data = mdf_aug_5, fixedeff = FALSE, time_cohort = FALSE) 
+  plot(synthmod5 %>% summary())
+  # 6 too
+  synthmod6 <- multisynth(logsal6 ~ af_cba_n , unitid, yr, data = mdf_aug_6, fixedeff = FALSE, time_cohort = FALSE) 
+  plot(synthmod6 %>% summary())
+
+  synthmod7 <- multisynth(logsal7 ~ af_cba_t , unitid, yr, data = mdf_aug_7, fixedeff = FALSE, time_cohort = FALSE) 
+  plot(synthmod7 %>% summary())
+
+  synthmod %>% summary()
+
+  plotsout_syn <- lapply(dep_vars[1:3], function(dep){ 
+    synthmod <- multisynth(as.formula(paste0(dep, " ~ af_cba_t")), unitid, yr, data = mdf_aug, fixedeff = FALSE, time_cohort = TRUE)
+    plot(synthmod %>% summary(), title = dep)
+  })
+
+  plotsout_syn[4:6] <- lapply(dep_vars[4:6], function(dep){ 
+    synthmod <- multisynth(as.formula(paste0(dep, " ~ af_cba_n")), unitid, yr, data = mdf_aug, fixedeff = FALSE, time_cohort = TRUE)
+    plot(synthmod %>% summary(), title = dep)
+  })
+
+  ggplot(mdf_clean, aes(x = cbaDate)) +
+    geom_histogram(binwidth = 1, fill = "steelblue", color = "black") +
+    labs(
+      title = "Distribution of CBA Treatment Years",
+      x = "CBA Date (Year)",
+      y = "Frequency"
+    ) +
+    theme_minimal()
 ```
 
 ```{r regressions, cache=TRUE, warning=FALSE}
+
+mdf_clean %<>% 
+mutate(af_2011 = ifelse(yr > 2011, 1, 0))
 # Regressions for each type of union
-tr1g <- feols(log(avgSalTR1) ~af_cba_t |  yr + unitid, data = mdf_clean ) #tr1g denotes total (m+f) group 1 (Profs) grouped by union type
-tr2g <- feols(log(avgSalTR2) ~af_cba_t |  yr + unitid, data = mdf_clean )
-tr3g <- feols(log(avgSalTR3) ~af_cba_t |  yr + unitid, data = mdf_clean )
-tr4g <- feols(log(avgSalTR4) ~af_cba_n |  yr + unitid, data = mdf_clean )
-tr5g <- feols(log(avgSalTR5) ~af_cba_n |  yr + unitid, data = mdf_clean )
-tr6g <- feols(log(avgSalTR6) ~af_cba_n |  yr + unitid, data = mdf_clean )
-tr7g <- feols(log(avgSalTR7) ~after_cba_date|  yr + unitid, data = mdf_clean )
+tr1g <- feols(log(avgSalTR1) ~af_cba_t + af_2011 |  yr + unitid, data = mdf_clean ) #tr1g denotes total (m+f) group 1 (Profs) grouped by union type
+tr2g <- feols(log(avgSalTR2) ~af_cba_t + af_2011 |  yr + unitid, data = mdf_clean )
+tr3g <- feols(log(avgSalTR3) ~af_cba_t + af_2011 |  yr + unitid, data = mdf_clean )
+tr4g <- feols(log(avgSalTR4) ~af_cba_n + af_2011 |  yr + unitid, data = mdf_clean )
+tr5g <- feols(log(avgSalTR5) ~af_cba_n + af_2011 |  yr + unitid, data = mdf_clean )
+tr6g <- feols(log(avgSalTR6) ~af_cba_n + af_2011 |  yr + unitid, data = mdf_clean )
+tr7g <- feols(log(avgSalTR7) ~after_cba_date + af_2011|  yr + unitid, data = mdf_clean )
 
 modelsummary(list("Professors" = tr1g,
                   "Associate Prof" = tr2g,
@@ -516,12 +890,117 @@ ggplot(mdf_clean %>% group_by(unitid) %>% summarize(count = n()), aes(x = count)
 # Also do DiD analysis since it makes more sense here
 
 thesis_treatment <- read.csv("../Thesis/transparency.csv")
+df_stateecon <- read.csv("../Thesis/stateecondata.csv")
+
+df_stateecon %<>%
+  rename("1998" = "X1998",
+         "1999" = "X1999",
+         "2000" = "X2000",
+         "2001" = "X2001",
+         "2002" = "X2002",
+         "2003" = "X2003",
+         "2004" = "X2004",
+         "2005" = "X2005",
+         "2006" = "X2006",
+         "2007" = "X2007",
+         "2008" = "X2008",
+         "2009" = "X2009",
+         "2010" = "X2010",
+         "2011" = "X2011",
+         "2012" = "X2012",
+         "2013" = "X2013",
+         "2014" = "X2014",
+         "2015" = "X2015",
+         "2016" = "X2016",
+         "2017" = "X2017",  
+         "2018" = "X2018",
+          "2019" = "X2019",
+          "2020" = "X2020", 
+          "2021" = "X2021", 
+          "2022" = "X2022", 
+          "2023" = "X2023", 
+          "2024" = "X2024"
+         )
+
+df_stateecon_long <- df_stateecon %>%
+  select(-LineCode) %>%
+  filter(grepl("GDP|PCE|Personal Income" , Description, ignore.case = TRUE)) %>% 
+  pivot_longer(
+    cols = -c(GeoName, Description, GeoFips), 
+    names_to = "yr", 
+    values_to = "value"
+  ) %>% 
+  pivot_wider(
+    names_from = Description, 
+    values_from = value
+  ) %>% 
+  mutate(yr = as.numeric(yr))%>%
+  rename(stateName = GeoName) %>% 
+  mutate(
+    stateCode = case_when(
+      stateName == "District of Columbia" ~ "DC",
+      stateName == "United States" ~ "US",
+      stateName == "Alabama" ~ "AL",
+      stateName == "Alaska" ~ "AK",
+      stateName == "Arizona" ~ "AZ",
+      stateName == "Arkansas" ~ "AR",
+      stateName == "California" ~ "CA",
+      stateName == "Colorado" ~ "CO",
+      stateName == "Connecticut" ~ "CT",
+      stateName == "Delaware" ~ "DE",
+      stateName == "Florida" ~ "FL",
+      stateName == "Georgia" ~ "GA",
+      stateName == "Hawaii" ~ "HI",
+      stateName == "Idaho" ~ "ID",
+      stateName == "Illinois" ~ "IL",
+      stateName == "Indiana" ~ "IN",
+      stateName == "Iowa" ~ "IA",
+      stateName == "Kansas" ~ "KS",
+      stateName == "Kentucky" ~ "KY",
+      stateName == "Louisiana" ~ "LA",
+      stateName == "Maine" ~ "ME",
+      stateName == "Maryland" ~ "MD",
+      stateName == "Massachusetts" ~ "MA",
+      stateName == "Michigan" ~ "MI",
+      stateName == "Minnesota" ~ "MN",
+      stateName == "Mississippi" ~ "MS",
+      stateName == "Missouri" ~ "MO",
+      stateName == "Montana" ~ "MT",
+      stateName == "Nebraska" ~ "NE",
+      stateName == "Nevada" ~ "NV",
+      stateName == "New Hampshire" ~ "NH",
+      stateName == "New Jersey" ~ "NJ",
+      stateName == "New Mexico" ~ "NM",
+      stateName == "New York" ~ "NY",
+      stateName == "North Carolina" ~ "NC",
+      stateName == "North Dakota" ~ "ND",
+      stateName == "Ohio" ~ "OH",
+      stateName == "Oklahoma" ~ "OK",
+      stateName == "Oregon" ~ "OR",
+      stateName == "Pennsylvania" ~ "PA",
+      stateName == "Rhode Island" ~ "RI",
+      stateName == "South Carolina" ~ "SC",
+      stateName == "South Dakota" ~ "SD",
+      stateName == "Tennessee" ~ "TN",
+      stateName == "Texas" ~ "TX",
+      stateName == "Utah" ~ "UT",
+      stateName == "Vermont" ~ "VT",
+      stateName == "Virginia" ~ "VA",
+      stateName == "Washington" ~ "WA",
+      stateName == "West Virginia" ~ "WV",
+      stateName == "Wisconsin" ~ "WI",
+      stateName == "Wyoming" ~ "WY"
+    )
+  )
 
 thesis_treatment %<>%
   rename(stateCode = "scode")
 
 mdf_th <- mdf_clean %>% 
   left_join(thesis_treatment, by = "stateCode")
+
+mdf_th %<>% 
+  left_join(df_stateecon_long, by = c("stateCode", "yr"))
 
 mdf_th %<>% 
   mutate(
@@ -531,36 +1010,55 @@ mdf_th %<>%
 
 mdf_th$Transparency <- relevel(mdf_th$Transparency, ref = "None")
 
-m1 <- feols(log(f1AEndowment) ~explicit |  yr , data = mdf_th , cluster = "stateCode")
-m2 <- feols(log(f2Endowment) ~explicit |  yr, data = mdf_th , cluster = "stateCode")
-
-modelsummary(list("Public" = m1,
-                  "Private" = m2),
-             output = "kableExtra",
-             stars = TRUE)
 
 
 mdf_th <- mdf_th %>%
   mutate(after_leg_year = ifelse(yr >= leg_year, 1, 0),
-         after_leg_year = ifelse(leg_year %>% is.na(), 0, after_leg_year)
+         after_leg_year = ifelse(leg_year %>% is.na(), 0, after_leg_year),
+         after_leg_year_explicit = ifelse(after_leg_year == 1 & explicit == 1, 1, 0), 
+         leg_year_explicit = ifelse(explicit == 1, leg_year, NA)
          ) %>%
   mutate(leg_ever = ifelse(is.na(leg_year), 0, 1), 
+         leg_ever_explicit = ifelse(is.na(leg_year_explicit), 0, 1),
          leg_in_timeframe = ifelse(leg_ever == 1 & leg_year > 2004, 1, 0)) %>% 
-  mutate(t = yr - leg_year) 
+  mutate(t = yr - leg_year) %>% 
+  mutate( 
+    f1AEndowment = f1AEndowment / 1e6, # Scale endowment to millions
+    f2Endowment = f2Endowment / 1e6,
+    log_f1AEndowment = ifelse(is.na(f1AEndowment) | f1AEndowment == 0, NA, log(f1AEndowment)),
+    log_f2Endowment = ifelse(is.na(f2Endowment)| f2Endowment == 0, NA, log(f2Endowment))
+  ) %>%  
+  rename(
+    real_GDP_2017usd = "  Real GDP (millions of chained 2017 dollars) 1", 
+    real_personal_income_2017usd =  "  Real personal income (millions of constant (2017) dollars) 2",
+    real_PCE_2017usd = "  Real PCE (millions of constant (2017) dollars) 3"
+  ) 
+
+mdf_th %<>%  
+  mutate( 
+    real_GDP_2017usd = as.numeric(real_GDP_2017usd),  
+    real_personal_income_2017usd = as.numeric(real_personal_income_2017usd), 
+    real_PCE_2017usd = as.numeric(real_PCE_2017usd)
+  )
 
 
 # Did 
+
+log_dep_vars <- c(
+  "log_f1AEndowment", 
+  "log_f2Endowment"
+  )
 
 dep_vars <- c(
   "f1AEndowment", 
   "f2Endowment"
   )
 
-plotsout <- lapply(dep_vars, function(dep){
+plotsout <- lapply(log_dep_vars, function(dep){
   ggdid(aggte(att_gt(yname = dep,
                      tname = "yr",
                      idname = "unitid",
-                     gname = "leg_year",
+                     gname = "leg_year_explicit",
                      xformla = ~1,
                      est_method = "reg",
                      control_group = "notyettreated",
@@ -568,8 +1066,275 @@ plotsout <- lapply(dep_vars, function(dep){
 
 })
 
-plotsout[1]
-plotsout[2]
+plotsout[[1]] +
+  labs(title = "Public Institutions", 
+        y = "Group Time ATT Estimate", 
+        x = "Year Relative to Treatment") +
+  theme(
+    plot.title = element_text(
+      hjust = 0.5,      # centers the title
+      size = 18,        # makes it larger
+      face = "bold",     # optional: makes it bold
+      color = "black"
+    ),
+    axis.title = element_text(color = "black", face = "bold", size = 35),  # axis titles
+    axis.text  = element_text(color = "black")                  # tick labels
+  )+ theme(text = element_text(size = 50), plot.title = element_text(size = 60)) +
+  scale_x_continuous(breaks = seq(-12, 10, by = 3))
+
+
+plotsout[[2]] +
+  labs(title = "Private Non-Profit", 
+        y = "Group Time ATT Estimate", 
+        x = "Year Relative to Treatment") +
+  theme(
+    plot.title = element_text(
+      hjust = 0.5,
+      size = 18,
+      face = "bold",
+      color = "black"
+    ),
+    axis.title = element_text(color = "black", face = "bold", size = 35),  # axis titles
+    axis.text  = element_text(color = "black")                  # tick labels
+  )+ theme(text = element_text(size = 50), plot.title = element_text(size = 60)) +
+  scale_x_continuous(breaks = seq(-12, 10, by = 3))
+
+ggdid(aggte(att_gt(yname = "log_f1AEndowment",
+                     tname = "yr",
+                     idname = "unitid",
+                     gname = "leg_year_explicit",
+                     xformla = ~1,
+                     est_method = "reg",
+                     control_group = "notyettreated",
+                     data = mdf_th), type = "dynamic", na.rm=TRUE), title = "Group-Time Difference-in-Differences Estimates for Public Institutions") 
+
+
+ggdid(aggte(att_gt(yname = "log_f2Endowment",
+                     tname = "yr",
+                     idname = "unitid",
+                     gname = "leg_year_explicit",
+                     xformla = ~1,
+                     est_method = "reg",
+                     control_group = "notyettreated",
+                     data = mdf_th), type = "dynamic", na.rm=TRUE), title = "Group-Time Difference-in-Differences Estimates for Private Non-Profit Institutions")
+
+# Test pre-trends 
+
+mdf_pre <- mdf_th %>% 
+  filter(!(after_leg_year_explicit)) %>% 
+  group_by(yr, leg_ever_explicit) %>% 
+  summarise(f1AEndowment = mean(f1AEndowment, na.rm = TRUE), 
+            f2Endowment = mean(f2Endowment, na.rm = TRUE)
+            )
+  
+
+
+ggplot(data = mdf_pre, aes(x = yr, y = f1AEndowment, color = as.factor(leg_ever_explicit))) +
+  geom_line()+ 
+  scale_color_manual(
+    values = c("red", "blue"),
+    labels = c("Never Treated", "Pre-Treatment")
+  )+ 
+  labs(
+    color = "Treatment Status",
+    title = "Public Institution Endowment Pre-Trends", 
+    x = "Year",
+    y = "Log Mean Endowment"
+    )+ theme(text = element_text(size = 20))
+
+ggplot(data = mdf_pre, aes(x = yr, y = f2Endowment, color = as.factor(leg_ever_explicit))) +
+  geom_line()+
+    scale_color_manual(
+    values = c("red", "blue"),
+    labels = c("Never Treated", "Pre-Treatment")
+)+ 
+  labs(
+    color = "Treatment Status",
+    title = "Private Non-Profit Institution Endowment Pre-Trends", 
+    x = "Year",
+    y = "Log Mean Endowment"
+    ) + theme(text = element_text(size = 20))
+
+
+# Run actual regression 
+
+m1 <- feols(log(f1AEndowment) ~explicit |  yr , data = mdf_th , cluster = "stateCode")
+m2 <- feols(log(f2Endowment) ~explicit |  yr, data = mdf_th , cluster = "stateCode")
+
+m1_c <- feols(log(f1AEndowment) ~explicit  + real_GDP_2017usd + real_personal_income_2017usd + real_PCE_2017usd  |  yr , data = mdf_th , cluster = "stateCode")
+m2_c <- feols(log(f2Endowment) ~explicit + real_GDP_2017usd + real_personal_income_2017usd + real_PCE_2017usd  |  yr, data = mdf_th , cluster = "stateCode")
+
+modelsummary(list("Public" = m1,
+                  "Private" = m2,
+                  "Public (Controls)" = m1_c,
+                  "Private (Controls)" = m2_c),
+             output = "latex",
+             stars = TRUE)
+
+
+lm_f1a_c <- feols(log_f1AEndowment ~ after_leg_year_explicit + real_GDP_2017usd + real_personal_income_2017usd + real_PCE_2017usd | yr + unitid, data = mdf_th, vcov = "hetero")
+lm_f2_c <- feols(log_f2Endowment ~ after_leg_year_explicit + real_GDP_2017usd + real_personal_income_2017usd + real_PCE_2017usd | yr + unitid, data = mdf_th, vcov = "hetero")
+
+lm_f1a <- feols(log_f1AEndowment ~ after_leg_year_explicit| yr + unitid, data = mdf_th, vcov = "hetero")
+lm_f2 <- feols(log_f2Endowment ~ after_leg_year_explicit| yr + unitid, data = mdf_th, vcov = "hetero")
+
+modelsummary(list("Public" = lm_f1a, "Private Non-Profit" =lm_f2, "Public (Controls)" = lm_f1a_c, "Private Non-Profit (Controls)" = lm_f2_c), stars=TRUE, output="latex")
+
+# Try dropping always treated 
+
+mdf_drop <- mdf_th %>% 
+  filter(!(leg_year < 2004 & explicit == 1))
+
+
+plotsout_drop <- lapply(log_dep_vars, function(dep){
+  ggdid(aggte(att_gt(yname = dep,
+                     tname = "yr",
+                     idname = "unitid",
+                     gname = "leg_year_explicit",
+                     xformla = ~1,
+                     est_method = "reg",
+                     control_group = "notyettreated",
+                     data = mdf_drop), type = "dynamic", na.rm=TRUE), title = dep)
+
+})
+
+plotsout_drop[[1]] +
+  labs(title = "Group-Time Difference-in-Differences Estimates for Public Institutions", 
+        y = "Group Time ATT Estimate", 
+        x = "Year Relative to Treatment") +
+  theme(
+    plot.title = element_text(
+      hjust = 0.5,      # centers the title
+      size = 18,        # makes it larger
+      face = "bold",     # optional: makes it bold
+      color = "black"
+    ),
+    axis.title = element_text(color = "black", face = "bold"),  # axis titles
+    axis.text  = element_text(color = "black")                  # tick labels
+  )
+
+
+plotsout_drop[[2]] +
+  labs(title = "Group-Time Difference-in-Differences Estimates for Private Non-Profit Institutions", 
+        y = "Group Time ATT Estimate", 
+        x = "Year Relative to Treatment") +
+  theme(
+    plot.title = element_text(
+      hjust = 0.5,
+      size = 18,
+      face = "bold",
+      color = "black"
+    ),
+    axis.title = element_text(color = "black", face = "bold"),  # axis titles
+    axis.text  = element_text(color = "black") )                 # tick labels
+
+
+lm_f1a_cd <- feols(log_f1AEndowment ~ after_leg_year_explicit + real_GDP_2017usd + real_personal_income_2017usd + real_PCE_2017usd | yr + unitid, data = mdf_drop, vcov = "hetero")
+lm_f2_cd <- feols(log_f2Endowment ~ after_leg_year_explicit + real_GDP_2017usd + real_personal_income_2017usd + real_PCE_2017usd | yr + unitid, data = mdf_drop, vcov = "hetero")
+
+lm_f1ad <- feols(log_f1AEndowment ~ after_leg_year_explicit| yr + unitid, data = mdf_drop, vcov = "hetero")
+lm_f2d <- feols(log_f2Endowment ~ after_leg_year_explicit| yr + unitid, data = mdf_drop, vcov = "hetero")
+
+modelsummary(list("Public" = lm_f1ad, "Private Non-Profit" =lm_f2d, "Public (Controls)" = lm_f1a_cd, "Private Non-Profit (Controls)" = lm_f2_cd), stars=TRUE, output="latex")
+
+# Map state legislation
+
+us_map <- map_data("state")
+
+thesis_treatment %<>% 
+  mutate( 
+    State = tolower(State)
+  )
+
+us_map %<>% 
+  left_join(thesis_treatment, by = c("region" = "State"))
+
+us_map %<>% 
+  mutate(
+    explicit = ifelse(Transparency == "Explicit", TRUE,   FALSE)
+  )
+
+ggplot(us_map, aes(long, lat, group = group, fill = Transparency)) +
+  geom_polygon(color = "white") +
+  coord_fixed(1.3) +
+  theme_void() +
+  scale_fill_brewer(palette = "Set2") +
+  labs(fill = "Category", title = "US States by Treatment Category")  # STATES BY CATEGORY
+
+ggplot(us_map, aes(long, lat, group = group, fill = explicit)) +
+  geom_polygon(color = "white") +
+  coord_fixed(1.3) +
+  theme_void() +
+  scale_fill_brewer(palette = "Set2") +
+  scale_fill_manual(
+    values = c("gray30", "#6666ff"),
+    labels = c("Not Treated", "Treated")
+  )+ 
+  ggtitle("US States by Explicit Treatment Status") +
+  theme(plot.title = element_text(hjust = 0.5, size = 60)) +
+  labs(
+    fill = "Treatment Status"
+    ) + theme(legend.text = element_text(size = 20), plot.title = element_text(size = 35)) # STATES BY CATEGORY
+
+
+
+
+# Summary Statistics for Thesis
+
+
+mdf_th %<>% 
+  arrange(unitid, yr) %>% 
+  group_by(unitid) %>% 
+  mutate(
+    endowment_change = endowment - lag(endowment)
+  ) %>% 
+  ungroup()
+
+summary_table <- mdf_th %>%
+  summarise(
+    n = n(),
+    across(
+      .cols = c(endowment, totalAssets, totalRevenue, tuitionAndFees, ugTot, gsTot, admissionsTot, pctAdmitted),
+      .fns = list(
+        mean = ~mean(.x, na.rm = TRUE),
+        sd   = ~sd(.x, na.rm = TRUE),
+        min  = ~min(.x, na.rm = TRUE),
+        max  = ~max(.x, na.rm = TRUE)
+      )
+    )
+  )
+
+  summary_table
+
+datasummary(
+  endowment/1e6 + totalAssets/1e6 + totalRevenue/1e6 + tuitionAndFees/1e6 + ugTot + gsTot + admissionsTot + pctAdmitted + endowment_change/1e6 + leg_ever_explicit +leg_year ~ 
+    Mean + SD + Min + Max,
+  data = mdf_th,
+  output = "latex",
+)
+
+
+test <- mdf_th %>%  
+  filter(endowment < 1)
+
+# Plot endowments over time
+
+mdf_plot <- mdf_th %>% 
+  group_by(yr) %>% 
+  summarise(
+    mean_endowment = mean(endowment, na.rm = TRUE)
+  )
+
+ggplot(mdf_plot, aes(x = yr, y = mean_endowment/1e6)) +
+  geom_line() +
+  labs(
+    title = "Mean Endowment Over Time",
+    x = "Year",
+    y = "Mean Endowment (Millions USD)"
+  ) +
+    theme_minimal()+
+  theme(text = element_text(size = 40))
+
 
 
 ```
