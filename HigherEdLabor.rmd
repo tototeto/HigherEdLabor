@@ -191,7 +191,7 @@ mdf_clean %<>%
 
 
 
-```{r data_vis, cache=TRUE, warning=FALSE}
+```{r data_vis, cache=TRUE, warning=FALSE, fig.width=10, fig.height=5}
 
 
 
@@ -328,7 +328,123 @@ ggplot(mdf_solo, aes(x = yr, y = totSalTR7)) +
     theme_minimal()
 
     test <- mdf_clean %>% filter(institutionName == "University of Oregon") %>% select(cbaDate, institutionName, af_cba_t, af_cba_n, yr)
-```
+
+    # General Sense of Data
+
+  # Treatment Year
+    ggplot(mdf_clean, aes(x = cbaDate)) +
+    geom_histogram(binwidth = 1, fill = "#444444", color = "black") +
+    labs(
+      title = "Distribution of CBA Treatment Years",
+      x = "CBA Date (Year)",
+      y = "Frequency"
+    ) +
+    theme_minimal() + theme(aspect.ratio = 9/16)
+
+    # Treatment Share Over Time
+    mdf_plot_1 <- mdf_clean %>% 
+      group_by(yr) %>% 
+      summarise(
+        mean_af_cba_t = mean(af_cba_t, na.rm = TRUE),
+        mean_af_cba_n = mean(af_cba_n, na.rm = TRUE)
+      )
+
+    ggplot(mdf_plot_1, aes(x = yr)) +
+      geom_line(aes(y = mean_af_cba_t, color = "Tenure-Track"), linewidth = 1) +
+      geom_line(aes(y = mean_af_cba_n, color = "Non-Tenure-Track"), linewidth = 1) +
+      labs(
+        title = "Share of Units with CBA Treatment Over Time",
+        x = "Year",
+        y = "Share (CBA Treatment)",
+        color = "CBA Type"
+      ) +
+      scale_color_manual(values = c("Tenure-Track" = "#444444", "Non-Tenure-Track" = "#aaaaaa")) +
+      theme_minimal() + 
+      theme(aspect.ratio = 9/16) + 
+      scale_y_continuous(labels = scales::label_percent())
+
+
+    # Plot average salary over time for each rank
+    mdf_plot_2 <- mdf_clean %>% 
+      group_by(yr) %>% 
+      summarise(
+        avgSalTR1 = mean(avgSalTR1, na.rm = TRUE) / 1e3, # Scale to thousands for better visualization
+        avgSalTR2 = mean(avgSalTR2, na.rm = TRUE) / 1e3,
+        avgSalTR3 = mean(avgSalTR3, na.rm = TRUE) / 1e3,
+        avgSalTR4 = mean(avgSalTR4, na.rm = TRUE) / 1e3,
+        avgSalTR5 = mean(avgSalTR5, na.rm = TRUE) / 1e3,
+        avgSalTR6 = mean(avgSalTR6, na.rm = TRUE) / 1e3,
+        avgSalTR7 = mean(avgSalTR7, na.rm = TRUE) / 1e3
+      ) %>% 
+      pivot_longer(cols = starts_with("avgSal"), names_to = "Rank", values_to = "AvgSalary")
+
+   ggplot(mdf_plot_2, aes(x = yr, y = AvgSalary, color = factor(Rank), linetype = factor(Rank))) +
+  geom_line(linewidth = 1) + 
+  labs(
+    title = "Average Salary by Rank Over Time",
+    x = "Year",
+    y = "Average Salary (Thousands of Dollars)",
+    color = "Rank",
+    linetype = "Rank"
+  ) +
+  scale_linetype_manual(
+    values = c("avgSalTR1" = "solid", "avgSalTR2" = "dashed", "avgSalTR3" = "dotted", 
+               "avgSalTR4" = "dotdash", "avgSalTR5" = "longdash", "avgSalTR6" = "twodash"),
+    labels = c("avgSalTR1" = "Professors", "avgSalTR2" = "Associate Prof", "avgSalTR3" = "Assistant Prof",
+               "avgSalTR4" = "Instructor", "avgSalTR5" = "Lecturer", "avgSalTR6" = "All Instructional Staff")
+  ) +
+  scale_color_manual(
+    values = c("avgSalTR1" = "#222222", "avgSalTR2" = "#444444", "avgSalTR3" = "#666666", 
+               "avgSalTR4" = "#888888", "avgSalTR5" = "#aaaaaa", "avgSalTR6" = "#cccccc"),
+    labels = c("avgSalTR1" = "Professors", "avgSalTR2" = "Associate Prof", "avgSalTR3" = "Assistant Prof",
+               "avgSalTR4" = "Instructor", "avgSalTR5" = "Lecturer", "avgSalTR6" = "All Instructional Staff")
+  ) +
+  theme_minimal() +
+  theme(aspect.ratio = 9/16)
+
+
+  # Salary range histogram for each schools average over last 10 years
+  mdf_plot_3 <- mdf_clean %>% 
+    filter(yr >= 2010, ugTot > 500) %>% 
+    group_by(institutionName) %>% 
+    summarise(
+      avgSalTR1 = mean(avgSalTR1, na.rm = TRUE) / 1e3, # Scale to thousands for better visualization
+      avgSalTR2 = mean(avgSalTR2, na.rm = TRUE) / 1e3,
+      avgSalTR3 = mean(avgSalTR3, na.rm = TRUE) / 1e3,
+      avgSalTR4 = mean(avgSalTR4, na.rm = TRUE) / 1e3,
+      avgSalTR5 = mean(avgSalTR5, na.rm = TRUE) / 1e3,
+      avgSalTR6 = mean(avgSalTR6, na.rm = TRUE) / 1e3,
+      avgSalTR7 = mean(avgSalTR7, na.rm = TRUE) / 1e3
+    )
+
+  ggplot(mdf_plot_3, aes(x = avgSalTR7)) +
+    geom_histogram(position = "identity", bins = 30) +
+    labs(
+      title = "Distribution of Average Salaries(2010-2020)",
+      x = "Average Salary (Thousands of Dollars)",
+      y = "Count of Institutions",
+      fill = "Rank"
+    ) +
+    theme_minimal() +
+    theme(aspect.ratio = 9/16)
+
+    # Horizontal bar chart of total students (ugTot) by state
+
+  mdf_plot_4 <- mdf_clean %>% 
+    group_by(stateCode) %>% 
+    summarise(totalStudents = sum(ugTot, na.rm = TRUE) / 1e6) %>% 
+    filter(totalStudents > 0.5) %>%
+    arrange(totalStudents)
+
+  ggplot(mdf_plot_4, aes(x = totalStudents, y = reorder(stateCode, totalStudents))) +
+    geom_bar(stat = "identity", fill = "#444444") +
+    labs(
+      title = "Total Undergraduate Students by State",
+      x = "Total Undergraduate Students (Millions)",
+      y = "State"
+    ) +
+    theme_minimal() +
+    theme(aspect.ratio = 12/16) + theme(axis.text.y = element_text(size = 13))
 
 ```{r test_regression, cache=TRUE, warning=FALSE}
 # Lets see if the data is statistically different after 2011
@@ -696,9 +812,220 @@ plotsout[[8]]
 
 ```
 
+```{r monteCarlo, cache=TRUE, warning=FALSE}
+
+# Generate data for synthetic did 
+
+years <- 2005:2024
+t_years <- 2010:2020
+len <- length(years)
+t_len <- length(t_years)
+n = 500
+tenure_actual = -0.1
+non_tenure_actual = -0.2
+prop_treated = 0.3
+
+runsim <- function(years, t_years, n, tenure_actual, non_tenure_actual, prop_treated, out = TRUE, b = TRUE, std = 0.1) {
+
+mcdf <- data.frame(
+  unitid = rep(1:n, each = len),
+  yr = rep(years, times = n)
+) %>% group_by(unitid) %>% 
+  mutate(
+    cba_date_t = sample(c(NA, t_years), size = 1, replace = TRUE, prob = c(prop_treated, rep((1 - prop_treated) / t_len, t_len))),
+    cba_date_n = sample(c(NA, t_years), size = 1, replace = TRUE, prob = c(prop_treated, rep((1 - prop_treated) / t_len, t_len))),
+    af_cba_t = ifelse(!is.na(cba_date_t) & yr >= cba_date_t, 1, 0),
+    af_cba_n = ifelse(!is.na(cba_date_n) & yr >= cba_date_n, 1, 0),
+    logsal1 = rnorm(n(), mean = 10 + af_cba_t * tenure_actual + af_cba_n * non_tenure_actual + (yr - min(years)) * 0.02, sd = std),
+    always_treated = ifelse(all(af_cba_t == 1) | all(af_cba_n == 1), 1, 0)
+  )%>% 
+  ungroup() %>% 
+  filter(always_treated == 0)
+
+
+  
+  synthmod_t <- multisynth(logsal1 ~ af_cba_t, unitid, yr, data = mcdf, fixedeff = TRUE, time_cohort = TRUE)
+  #beep(1)
+  out_t <- synthmod_t %>% summary()
+  #plot(out_t)
+  #beep(1)
+
+  att_t <- out_t$att$Estimate[out_t$att$Level == "Average" & is.na(out_t$att$Time)]
+
+  synthmod_n <- multisynth(logsal1 ~ af_cba_n, unitid, yr, data = mcdf, fixedeff = TRUE, time_cohort = TRUE)
+  #beep(1)
+  out_n <- synthmod_n %>% summary()
+  #plot(out_n)
+  #beep(1)
+
+    att_n <- out_n$att$Estimate[out_n$att$Level == "Average" & is.na(out_n$att$Time)]
+
+error_t <- round((att_t - tenure_actual) / tenure_actual, 2)
+error_n <- round((att_n - non_tenure_actual) / non_tenure_actual, 2)
+
+if(out){
+cat("---------------------------------\n","Monte Carlo Simulation Results\n","--------------------------------\n")
+cat("N = ", n, "\n")
+cat("Total Years: ", len, "\n")
+cat("Treatment Years: ", t_len, "\n")
+cat("\nTenure effect estimate:", att_t, "\n")
+cat("Error of " , error_t, "%\n")
+cat("\nNon-tenure effect estimate:", att_n, "\n")
+cat("Error of " , error_n, "%\n")
+}
+if(b){beep(1)}
+
+
+out =  c(att_t, att_n, error_t, error_n)
+return(out)
+}
+
+runsim(years, t_years, n, tenure_actual, non_tenure_actual, prop_treated)
+
+## Test effect of varying n
+nset <- 10^seq(1, 2, by = 0.5)
+
+count <- 0
+vary_n <- lapply(nset, function(n) {
+  # run simulation
+  res <- runsim(years, t_years, n, tenure_actual, non_tenure_actual, prop_treated, out = FALSE, b = FALSE)
+  
+  # update progress
+  count <<- count + 1   # use <<- so it updates the outer variable
+  pct <- round(count / length(nset) * 100, 2)
+  cat("Progress: ", pct, "%\n")
+  
+  # return result
+  res
+})
+
+# combine results into a dataframe
+vndf <- do.call(rbind, vary_n) %>% 
+  as.data.frame() %>% 
+  rename(att_t = V1, att_n = V2, error_t = V3, error_n = V4) %>% 
+  mutate(n = nset)
+
+# regressions
+feols((error_t)^2 ~ n, data = vndf, vcov = "hetero") %>% summary()
+feols((error_n)^2 ~ n, data = vndf, vcov = "hetero") %>% summary()
+
+## Test effect of varying n vs varying prop treated
+
+
+quiet_runsim_safe <- function(n, prop_treated, years, t_years,
+                              tenure_actual, non_tenure_actual,
+                              std = 0.1) {
+  len <- length(years)
+  t_len <- length(t_years)
+  
+  # remove last year from t_years to ensure pre-treatment exists
+  t_years_safe <- t_years[t_years < max(years)]
+  
+  mcdf <- data.frame(
+    unitid = rep(1:n, each = len),
+    yr = rep(years, times = n)
+  )
+  
+  treat_dates <- data.frame(
+    unitid = 1:n,
+    cba_date_t = sample(c(NA, t_years_safe),
+                        size = n, replace = TRUE,
+                        prob = c(1 - prop_treated,
+                                 rep(prop_treated / length(t_years_safe),
+                                     length(t_years_safe)))),
+    cba_date_n = sample(c(NA, t_years_safe),
+                        size = n, replace = TRUE,
+                        prob = c(1 - prop_treated,
+                                 rep(prop_treated / length(t_years_safe),
+                                     length(t_years_safe))))
+  )
+  
+  # force at least one untreated unit per outcome
+  if(all(!is.na(treat_dates$cba_date_t))) treat_dates$cba_date_t[1] <- NA
+  if(all(!is.na(treat_dates$cba_date_n))) treat_dates$cba_date_n[1] <- NA
+  
+  mcdf <- mcdf %>%
+    left_join(treat_dates, by = "unitid") %>%
+    mutate(
+      af_cba_t = ifelse(!is.na(cba_date_t) & yr >= cba_date_t, 1, 0),
+      af_cba_n = ifelse(!is.na(cba_date_n) & yr >= cba_date_n, 1, 0),
+      logsal1 = 10 + af_cba_t * tenure_actual + af_cba_n * non_tenure_actual +
+                (yr - min(yr)) * 0.02 + rnorm(nrow(.), 0, std)
+    )
+  
+  # safety check
+  if(length(unique(mcdf$af_cba_t)) < 2 || length(unique(mcdf$af_cba_n)) < 2) {
+    return(tibble(
+      n = n,
+      prop_treated = prop_treated,
+      att_t = NA_real_,
+      att_n = NA_real_,
+      error_t = NA_real_,
+      error_n = NA_real_
+    ))
+  }
+  
+  synthmod_t <- multisynth(logsal1 ~ af_cba_t, unitid, yr, data = mcdf, fixedeff = TRUE)
+  synthmod_n <- multisynth(logsal1 ~ af_cba_n, unitid, yr, data = mcdf, fixedeff = TRUE)
+  
+  att_t <- summary(synthmod_t)$att$Estimate[summary(synthmod_t)$att$Level == "Overall"]
+  att_n <- summary(synthmod_n)$att$Estimate[summary(synthmod_n)$att$Level == "Overall"]
+  
+  error_t <- round((att_t - tenure_actual)/tenure_actual, 2)
+  error_n <- round((att_n - non_tenure_actual)/non_tenure_actual, 2)
+  
+  tibble(
+    n = n,
+    prop_treated = prop_treated,
+    att_t = att_t,
+    att_n = att_n,
+    error_t = error_t,
+    error_n = error_n
+  )
+}
+# ------------------------------
+# 2️⃣ Monte Carlo parameter grid
+# ------------------------------
+
+nset <- c(5000, 6000)
+t_years <- 2010:2015         # sample sizes
+prop_set <- c(0.1,0.2)   # proportion treated
+reps <- 1                              # repetitions per combo
+
+param_grid <- expand_grid(
+  n = nset,
+  prop_treated = prop_set,
+  rep = 1:reps
+)
+
+# ------------------------------
+# 3️⃣ Run parallel Monte Carlo
+# ------------------------------
+
+plan(multisession, workers = parallel::detectCores() - 1)
+
+set.seed(123)
+
+results <- future_pmap_dfr(
+  list(param_grid$n, param_grid$prop_treated),
+  function(n, p) {
+    quiet_runsim_safe(n, p, years, t_years, tenure_actual, non_tenure_actual)
+  },
+  .options = furrr_options(seed = TRUE),
+  .progress = TRUE
+)
+
+# Merge rep column if needed
+results <- results %>% bind_cols(param_grid %>% select(rep))
+
+
+quiet_runsim_safe(500, 0.2, years, t_years, tenure_actual, non_tenure_actual)
+
+```
+
 ```{r mdfclean, cache=TRUE, warning=FALSE}
 
-pacman::p_load(tidyverse, broom, janitor, readr, stargazer, skimr, tidymodels, magrittr,doParallel, fixest, modelsummary, kableExtra, did, gt, beepr, ggplot2, maps, synthdid, devtools, augsynth)
+pacman::p_load(tidyverse, broom, janitor, readr, stargazer, skimr, tidymodels, magrittr,doParallel, fixest, modelsummary, kableExtra, did, gt, beepr, ggplot2, maps, synthdid, devtools, augsynth, future, furrr)
 setwd("C:/Working_Projects/HigherEdLabor")
 
 mdf_clean <- read.csv("Written Data/mdf_clean.csv")
@@ -787,14 +1114,7 @@ mdf_clean %>%
     plot(synthmod %>% summary(), title = dep)
   })
 
-  ggplot(mdf_clean, aes(x = cbaDate)) +
-    geom_histogram(binwidth = 1, fill = "steelblue", color = "black") +
-    labs(
-      title = "Distribution of CBA Treatment Years",
-      x = "CBA Date (Year)",
-      y = "Frequency"
-    ) +
-    theme_minimal()
+  
 ```
 
 ```{r regressions, cache=TRUE, warning=FALSE}
@@ -816,14 +1136,14 @@ modelsummary(list("Professors" = tr1g,
                   "Instructor" = tr4g),
              output = "kableExtra",
              stars = TRUE,
-             title = "Tenior Track after CBA date")
+             title = "tenure Track after CBA date")
 
 modelsummary(list("Lecturer" = tr5g,
                   "No Rank"= tr6g,
                   "All Inst. Staff" = tr7g),
              output = "kableExtra",
              stars = TRUE,
-             title = "Non Tenior Track after CBA date")
+             title = "Non tenure Track after CBA date")
 ```
 
 ```{r test, cache=TRUE, warning=FALSE}
