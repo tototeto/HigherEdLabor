@@ -446,6 +446,9 @@ ggplot(mdf_solo, aes(x = yr, y = totSalTR7)) +
     theme_minimal() +
     theme(aspect.ratio = 12/16) + theme(axis.text.y = element_text(size = 13))
 
+
+```
+
 ```{r test_regression, cache=TRUE, warning=FALSE}
 # Lets see if the data is statistically different after 2011
 
@@ -1358,7 +1361,9 @@ mdf_th %<>%
   mutate( 
     real_GDP_2017usd = as.numeric(real_GDP_2017usd),  
     real_personal_income_2017usd = as.numeric(real_personal_income_2017usd), 
-    real_PCE_2017usd = as.numeric(real_PCE_2017usd)
+    real_PCE_2017usd = as.numeric(real_PCE_2017usd),
+    logTuition = ifelse(is.na(tuitionAndFees) | tuitionAndFees == 0, NA, log(as.numeric(tuitionAndFees))),
+    logRev = ifelse(is.na(totalRevenue) | totalRevenue == 0, NA, log(as.numeric(totalRevenue))),
   )
 
 
@@ -1366,7 +1371,10 @@ mdf_th %<>%
 
 log_dep_vars <- c(
   "log_f1AEndowment", 
-  "log_f2Endowment"
+  "log_f2Endowment", 
+  "logTuition",
+  "logRev", 
+  "ugTot"
   )
 
 dep_vars <- c(
@@ -1418,6 +1426,56 @@ plotsout[[2]] +
     axis.text  = element_text(color = "black")                  # tick labels
   )+ theme(text = element_text(size = 50), plot.title = element_text(size = 60)) +
   scale_x_continuous(breaks = seq(-12, 10, by = 3))
+
+  plotsout[[3]] +
+  labs(title = "Log Tuition", 
+        y = "Group Time ATT Estimate", 
+        x = "Year Relative to Treatment") +
+  theme(
+    plot.title = element_text(
+      hjust = 0.5,
+      size = 18,
+      face = "bold",
+      color = "black"
+    ),
+    axis.title = element_text(color = "black", face = "bold", size = 35),  # axis titles
+    axis.text  = element_text(color = "black")                  # tick labels
+  )+ theme(text = element_text(size = 50), plot.title = element_text(size = 60)) +
+  scale_x_continuous(breaks = seq(-12, 10, by = 3))
+
+  plotsout[[4]] +
+  labs(title = "Log Revenue", 
+        y = "Group Time ATT Estimate", 
+        x = "Year Relative to Treatment") +
+  theme(
+    plot.title = element_text(
+      hjust = 0.5,
+      size = 18,
+      face = "bold",
+      color = "black"
+    ),
+    axis.title = element_text(color = "black", face = "bold", size = 35),  # axis titles
+    axis.text  = element_text(color = "black")                  # tick labels
+  )+ theme(text = element_text(size = 50), plot.title = element_text(size = 60)) +
+  scale_x_continuous(breaks = seq(-12, 10, by = 3))
+
+  plotsout[[5]] +
+  labs(title = "UIndergraduate Enrollment", 
+        y = "Group Time ATT Estimate", 
+        x = "Year Relative to Treatment") +
+  theme(
+    plot.title = element_text(
+      hjust = 0.5,
+      size = 18,
+      face = "bold",
+      color = "black"
+    ),
+    axis.title = element_text(color = "black", face = "bold", size = 35),  # axis titles
+    axis.text  = element_text(color = "black")                  # tick labels
+  )+ theme(text = element_text(size = 50), plot.title = element_text(size = 60)) +
+  scale_x_continuous(breaks = seq(-12, 10, by = 3))
+
+
 
 ggdid(aggte(att_gt(yname = "log_f1AEndowment",
                      tname = "yr",
