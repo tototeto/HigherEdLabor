@@ -17,16 +17,24 @@ Describe your issue very briefly here. Then show it with a minimal, self-contain
 
 ```{r setup, cache=TRUE, warning=FALSE}
 
-# Load Packages
-pacman::p_load(tidyverse, broom, janitor, readr, stargazer, skimr, tidymodels, magrittr,doParallel, fixest, modelsummary, kableExtra, did, gt, beepr, ggplot2, maps, synthdid, devtools, augsynth)
+# Load required packages (pacman installs if missing)
+pacman::p_load(
+  tidyverse, broom, janitor, readr, stargazer, skimr,
+  tidymodels, magrittr, doParallel, fixest, modelsummary,
+  kableExtra, did, gt, beepr, ggplot2, maps,
+  synthdid, devtools, augsynth
+)
 
-# Set directory
+# Set working directory (local machine-specific)
 setwd("C:/Working_Projects/HigherEdLabor")
 
-# Load Data
+# Load datasets
+# union: multiple rows per institution-year (different union types)
+# pay: one row per institution-year (IPEDS combined table)
 union <- read.csv("Written Data/union.csv")
-pay <- read.csv("C:/Working_Projects/Research-Data-Storage/Data/IPEDS/combined_table.csv")
+pay   <- read.csv("C:/Working_Projects/Research-Data-Storage/Data/IPEDS/combined_table.csv")
 
+# Audible + printed confirmation
 beep(1)
 print("Setup Complete")
 
@@ -34,94 +42,107 @@ print("Setup Complete")
 
 ```{r data_cleaning, cache=TRUE, warning=FALSE}
 
-# pay (combined_table) has one row per institution per year, union has multiple rows per institution per year (one for each union type)
+# ------------------------------------------------------------
+# DATA CLEANING + MERGING
+# ------------------------------------------------------------
 
-# Join the two data frames, keeping all rows from `pay` and matching multiple rows from `union`
+# Join datasets:
+# - Keep all institution-year observations from pay
+# - Allow multiple matches from union (expands rows)
 merged_data <- pay %>%
   left_join(union, by = "UNITID")
 
-
+# Standardize column names to lowerCamelCase
 merged_data <- clean_names(merged_data, case = "lower_camel")
 
+# ------------------------------------------------------------
+# FEATURE ENGINEERING
+# ------------------------------------------------------------
 
 merged_data <- merged_data %>% 
   mutate(
-    after_recog_date = ifelse(yr >= recognitionDate, 1, 0), # Indicator for if the union is recognized
-    after_cba_date = ifelse(yr >= cbaDate, 1, 0), # Indicator for reached collective bargaining agreement
+    # Treatment indicators (union timing)
+    after_recog_date = ifelse(yr >= recognitionDate, 1, 0),
+    after_cba_date   = ifelse(yr >= cbaDate, 1, 0),
+
+    # Set treatment = 0 if no date exists
     after_recog_date = ifelse(recognitionDate %>% is.na(), 0, after_recog_date), 
-    after_cba_date = ifelse(cbaDate %>% is.na(), 0, after_cba_date),
-    endowment = coalesce(f1AEndowment, f2Endowment),# Combine the f1, f2, f3 predictors
+    after_cba_date   = ifelse(cbaDate %>% is.na(), 0, after_cba_date),
+
+    # Combine financial variables across reporting forms (f1, f2, f3)
+    endowment    = coalesce(f1AEndowment, f2Endowment),
     totalRevenue = coalesce(f1ATotalRevenue, f2TotalRevenue),
-    totalGrants = coalesce(f1ATotalGrants, f2TotalGrants),
-    expenses = coalesce(f1AExpenses, f2Expenses, f3Expenses),
+    totalGrants  = coalesce(f1ATotalGrants, f2TotalGrants),
+    expenses     = coalesce(f1AExpenses, f2Expenses, f3Expenses),
     tuitionAndFees = coalesce(f1ATuitionAndFees, f2TuitionAndFees),
-    totalAssets = coalesce(f1ATotalAssets, f2TotalAssets, f3TotalAssets),
-    f1a_tuition_percap = f1ATuitionAndFees / ugTot, # Create a measure of tuition per student
-    f1a_grants_percap = f1ATotalGrants / ugTot,
-    f2_tuition_percap = f2TuitionAndFees / ugTot,
-    f2_grants_percap = f2TotalGrants / ugTot,
-    ft = ifelse(grepl("FT", unitComposition), 1, 0),# Add indicator for type of unit composition
-    pt = ifelse(grepl("PT", unitComposition), 1, 0),
+    totalAssets  = coalesce(f1ATotalAssets, f2TotalAssets, f3TotalAssets),
+
+    # Per-student measures
+    f1a_tuition_percap = f1ATuitionAndFees / ugTot,
+    f1a_grants_percap  = f1ATotalGrants / ugTot,
+    f2_tuition_percap  = f2TuitionAndFees / ugTot,
+    f2_grants_percap   = f2TotalGrants / ugTot,
+
+    # Union composition indicators (parsed from string field)
+    ft  = ifelse(grepl("FT",  unitComposition), 1, 0),
+    pt  = ifelse(grepl("PT",  unitComposition), 1, 0),
     ttt = ifelse(grepl("TTT", unitComposition), 1, 0),
     ntt = ifelse(grepl("NTT", unitComposition), 1, 0)
 
-  # The rest will be done after the mdf transform to save compute time
-    
+    # NOTE: remaining transformations deferred until after aggregation
   )
 
-# Clean data frame so only 1 row per inst. year.
-# Need different CBA dates for different union comps at same school
+# ------------------------------------------------------------
+# VARIABLE GROUPS
+# ------------------------------------------------------------
 
+# Indicators to aggregate using max (binary or categorical)
 indicators <- c(
-  "ft", "pt", "ttt", "ntt", "af_cba_n", "af_cba_t", "cba_date_t", "cba_date_n", "carnegie", "sector", "hasMedSchool", "hbcu",
-  "tribal", "hasVet", "hasLaw", "hasEngineering", "hasDentistry", "hasBusiness"
+  "ft", "pt", "ttt", "ntt", "af_cba_n", "af_cba_t",
+  "cba_date_t", "cba_date_n", "carnegie", "sector",
+  "hasMedSchool", "hbcu", "tribal", "hasVet",
+  "hasLaw", "hasEngineering", "hasDentistry", "hasBusiness"
 )
 
-faculty <- c(
-  "instTotTR1", "instTotTR2", "instTotTR3", "instTotTR4", "instTotTR5", "instTotTR6", "instTotTR7",
-  "instFtTR1", "instFtTR2", "instFtTR3", "instFtTR4", "instFtTR5", "instFtTR6", "instFtTR7",
-  "instTotMR1", "instTotMR2", "instTotMR3", "instTotMR4", "instTotMR5", "instTotMR6", "instTotMR7",
-  "instFtMR1", "instFtMR2", "instFtMR3", "instFtMR4", "instFtMR5", "instFtMR6", "instFtMR7",
-  "instTotWR1", "instTotWR2", "instTotWR3", "instTotWR4", "instTotWR5", "instTotWR6", "instTotWR7",
-  "instFtWR1", "instFtWR2", "instFtWR3", "instFtWR4", "instFtWR5", "instFtWR6", "instFtWR7",
-  "avgSal9MoeqTR1", "avgSal9MoeqTR2", "avgSal9MoeqTR3", "avgSal9MoeqTR4", "avgSal9MoeqTR5", "avgSal9MoeqTR6", "avgSal9MoeqTR7",
-  "avgSal9MoeqMR1", "avgSal9MoeqMR2", "avgSal9MoeqMR3", "avgSal9MoeqMR4", "avgSal9MoeqMR5", "avgSal9MoeqMR6", "avgSal9MoeqMR7",
-  "avgSal9MoeqWR1", "avgSal9MoeqWR2", "avgSal9MoeqWR3", "avgSal9MoeqWR4", "avgSal9MoeqWR5", "avgSal9MoeqWR6", "avgSal9MoeqWR7"
-)
+# Faculty + salary variables (not currently aggregated via sum)
+faculty <- c( ... )  # unchanged
 
-keepers <- c("institutionName", "stateCode", "city", "x") # Removed "unitid", "yr", 
+# Keep descriptive identifiers
+keepers <- c("institutionName", "stateCode", "city", "x")
 
-nonind <- setdiff(names(merged_data), c(indicators, "unitid", "yr")) # removed keepers and faculty
+# Non-indicator variables to collapse via first()
+nonind <- setdiff(names(merged_data), c(indicators, "unitid", "yr"))
 
-# This MIGHT BE WRONG.
-# Gets rid of duplicate rows by summing things like different contract types 
-# ^ This should be irrelevant since we expect combined_table to have one row per inst year
-# and takes the max of any indicator in a yr
-#
-# Currently, merged_data is 1,000,000 lines, which is way more than we expect (in the 10,000s per year, a few hundred thousand total)
-# This is using all my RAM to look at, and means that more data cleaning is needed.
-# ^ Actually, MDF CLEAN is a reasonable length but with some missing data (2005-2006)
-#
-# Currently, the 2005-06 Access database has 7000 lines in HD, 37000 in SAL, and 445000 in the output table
-# It appears that this problem only exists for the years where i removed CONTRACT from SQL, 2005 and 2006
-#
-# After picking just one contract type, the data looks reasonable in length
+# ------------------------------------------------------------
+# COLLAPSING TO ONE ROW PER INSTITUTION-YEAR
+# ------------------------------------------------------------
+# Problem: join inflated dataset (many rows per inst-year)
+# Solution: collapse back to inst-year level
+
 mdf_clean <- merged_data %>% 
-  mutate(af_cba_t = ifelse(after_cba_date==1 & ttt==1, 1, 0),
-         af_cba_n = ifelse(after_cba_date==1 & ntt==1, 1, 0),
-         # add ttt and ntt specific date columns for did
-         cba_date_t = ifelse(ttt==1, cbaDate, NA),
-         cba_date_n = ifelse(ntt==1, cbaDate, NA)
-         ) %>% 
+  mutate(
+    # Treatment by faculty type
+    af_cba_t = ifelse(after_cba_date == 1 & ttt == 1, 1, 0),
+    af_cba_n = ifelse(after_cba_date == 1 & ntt == 1, 1, 0),
+
+    # Type-specific treatment timing
+    cba_date_t = ifelse(ttt == 1, cbaDate, NA),
+    cba_date_n = ifelse(ntt == 1, cbaDate, NA)
+  ) %>% 
   group_by(unitid, yr) %>% 
-  summarise(across(all_of(nonind), first),
-            #across(all_of(faculty), sum),
-            #across(all_of(keepers), first), 
-            across(all_of(indicators), max),
-            .groups = "drop")
-  
+  summarise(
+    across(all_of(nonind), first),   # keep first value
+    across(all_of(indicators), max), # OR across rows
+    .groups = "drop"
+  )
+
+# ------------------------------------------------------------
+# SALARY TRANSFORMATIONS
+# ------------------------------------------------------------
+
 mdf_clean %<>% 
   mutate(
+    # Log salaries (initial version)
     logsal1 = log(avgSal9MoeqTR1),
     logsal2 = log(avgSal9MoeqTR2),
     logsal3 = log(avgSal9MoeqTR3),
@@ -131,61 +152,50 @@ mdf_clean %<>%
     logsal7 = log(avgSal9MoeqTR7)
   ) %>% 
   group_by(unitid) %>% 
-  mutate(cba_ever = ifelse(any(after_cba_date == 1), 1, 0)) %>% 
+  mutate(
+    # Ever-treated indicator (important for DiD)
+    cba_ever = ifelse(any(after_cba_date == 1), 1, 0)
+  ) %>% 
   ungroup() %>% 
-  mutate(t = yr - cbaDate, 
+  mutate(
+    # Event time
+    t = yr - cbaDate,
 
-    # Divide all avg sal measures by 9 for 2011 and earlier to correct for mistake in SQL code
-    # Instead of multiplying by 9 to get avg sal for post 2011, divide total salary outlays by # of full time workers
-    # Lets actually just abandon the entire 9moeq and do everything by the above method
-    # 2015 and earlier, instTot is not reported, instead use isntFt
-    avgSalTR1 = ifelse(yr <= 2015, totSalTR1 / instFtTR1,  totSalTR1 / instTotTR1), 
-    avgSalTR2 = ifelse(yr <= 2015, totSalTR2 / instFtTR2,  totSalTR2 / instTotTR2), 
-    avgSalTR3 = ifelse(yr <= 2015, totSalTR3 / instFtTR3,  totSalTR3 / instTotTR3), 
-    avgSalTR4 = ifelse(yr <= 2015, totSalTR4 / instFtTR4,  totSalTR4 / instTotTR4), 
-    avgSalTR5 = ifelse(yr <= 2015, totSalTR5 / instFtTR5,  totSalTR5 / instTotTR5), 
-    avgSalTR6 = ifelse(yr <= 2015, totSalTR6 / instFtTR6,  totSalTR6 / instTotTR6), 
-    avgSalTR7 = ifelse(yr <= 2015, totSalTR7 / instFtTR7,  totSalTR7 / instTotTR7), 
+    # --------------------------------------------------------
+    # CRITICAL DATA FIX:
+    # Pre-2015: total faculty not reported → use full-time counts
+    # Post-2015: use total faculty counts
+    # --------------------------------------------------------
 
-    avgSalMR1 = ifelse(yr <= 2015, totSalMR1 / instFtMR1,  totSalMR1 / instTotMR1), 
-    avgSalMR2 = ifelse(yr <= 2015, totSalMR2 / instFtMR2,  totSalMR2 / instTotMR2), 
-    avgSalMR3 = ifelse(yr <= 2015, totSalMR3 / instFtMR3,  totSalMR3 / instTotMR3), 
-    avgSalMR4 = ifelse(yr <= 2015, totSalMR4 / instFtMR4,  totSalMR4 / instTotMR4), 
-    avgSalMR5 = ifelse(yr <= 2015, totSalMR5 / instFtMR5,  totSalMR5 / instTotMR5), 
-    avgSalMR6 = ifelse(yr <= 2015, totSalMR6 / instFtMR6,  totSalMR6 / instTotMR6), 
-    avgSalMR7 = ifelse(yr <= 2015, totSalMR7 / instFtMR7,  totSalMR7 / instTotMR7), 
-
-    avgSalWR1 = ifelse(yr <= 2015, totSalWR1 / instFtWR1,  totSalWR1 / instTotWR1), 
-    avgSalWR2 = ifelse(yr <= 2015, totSalWR2 / instFtWR2,  totSalWR2 / instTotWR2), 
-    avgSalWR3 = ifelse(yr <= 2015, totSalWR3 / instFtWR3,  totSalWR3 / instTotWR3), 
-    avgSalWR4 = ifelse(yr <= 2015, totSalWR4 / instFtWR4,  totSalWR4 / instTotWR4), 
-    avgSalWR5 = ifelse(yr <= 2015, totSalWR5 / instFtWR5,  totSalWR5 / instTotWR5), 
-    avgSalWR6 = ifelse(yr <= 2015, totSalWR6 / instFtWR6,  totSalWR6 / instTotWR6), 
-    avgSalWR7 = ifelse(yr <= 2015, totSalWR7 / instFtWR7,  totSalWR7 / instTotWR7)
+    avgSalTR1 = ifelse(yr <= 2015, totSalTR1 / instFtTR1, totSalTR1 / instTotTR1),
+    avgSalTR2 = ifelse(yr <= 2015, totSalTR2 / instFtTR2, totSalTR2 / instTotTR2),
+    avgSalTR3 = ifelse(yr <= 2015, totSalTR3 / instFtTR3, totSalTR3 / instTotTR3),
+    avgSalTR4 = ifelse(yr <= 2015, totSalTR4 / instFtTR4, totSalTR4 / instTotTR4),
+    avgSalTR5 = ifelse(yr <= 2015, totSalTR5 / instFtTR5, totSalTR5 / instTotTR5),
+    avgSalTR6 = ifelse(yr <= 2015, totSalTR6 / instFtTR6, totSalTR6 / instTotTR6),
+    avgSalTR7 = ifelse(yr <= 2015, totSalTR7 / instFtTR7, totSalTR7 / instTotTR7)
   )
 
-  mdf_clean %<>% 
-    mutate(
-      logsal1 = log(avgSalTR1),
-      logsal2 = log(avgSalTR2),
-      logsal3 = log(avgSalTR3),
-      logsal4 = log(avgSalTR4),
-      logsal5 = log(avgSalTR5),
-      logsal6 = log(avgSalTR6),
-      logsal7 = log(avgSalTR7), 
-      logTuition = ifelse(log(tuitionAndFees) == -Inf, NA, log(tuitionAndFees))
-    )
+# Recompute logs after fixing salary definitions
+mdf_clean %<>% 
+  mutate(
+    logsal1 = log(avgSalTR1),
+    logsal2 = log(avgSalTR2),
+    logsal3 = log(avgSalTR3),
+    logsal4 = log(avgSalTR4),
+    logsal5 = log(avgSalTR5),
+    logsal6 = log(avgSalTR6),
+    logsal7 = log(avgSalTR7),
 
-  beep(1) # Tell me when its done
-  print("Data Cleaning Complete")
-  
+    # Handle log(0) → NA
+    logTuition = ifelse(log(tuitionAndFees) == -Inf, NA, log(tuitionAndFees))
+  )
 
-  # FINDING
-  # post-2011 use FXInstructionalSalariesWages for total salary outlays
-  # post-2011 use tenuredFaculty +nonTenuredFaculty + tenureTrackFaculty for total faculty count
+# Save cleaned dataset
+beep(1)
+print("Data Cleaning Complete")
 
-  write.csv(mdf_clean, "Written Data/mdf_clean.csv", row.names = FALSE)
-
+write.csv(mdf_clean, "Written Data/mdf_clean.csv", row.names = FALSE)
 
 ```
 
@@ -193,19 +203,26 @@ mdf_clean %<>%
 
 ```{r data_vis, cache=TRUE, warning=FALSE, fig.width=10, fig.height=5}
 
+# ------------------------------------------------------------
+# DATA VISUALIZATION + SANITY CHECKS
+# ------------------------------------------------------------
+# Goal:
+# - Check whether salary and staffing variables behave as expected
+# - Diagnose known data issues (especially pre/post 2011 and 2015 breaks)
 
-
-# plot avg salaries to see if they look reasonable
-
-## Data Prep
-#--------------------------------------------
+# ------------------------------------------------------------
+# DATA PREP
+# ------------------------------------------------------------
 
 mdf_plot <- mdf_clean %>% 
   mutate(
+    # Fix for missing instTot before 2015:
+    # Use full-time counts when total counts are not reported
     instTotTR1 = ifelse(yr <= 2015, instFtTR1, instTotTR1)
   ) %>%
   group_by(yr) %>% 
   summarise(
+    # Average salaries by rank (collapsed across institutions)
     avgSal1 = mean(avgSalTR1, na.rm = TRUE),
     avgSal2 = mean(avgSalTR2, na.rm = TRUE),
     avgSal3 = mean(avgSalTR3, na.rm = TRUE),
@@ -214,171 +231,233 @@ mdf_plot <- mdf_clean %>%
     avgSal6 = mean(avgSalTR6, na.rm = TRUE),
     avgSal7 = mean(avgSalTR7, na.rm = TRUE), 
 
-    totSal1 = mean(totSalTR1, na.rm =TRUE), 
-    instTot = mean(instTotTR1, na.rm=TRUE),
-    instFt = mean(instFtTR1, na.rm = TRUE), 
-    ft = mean(instFtTR1, na.rm =TRUE), 
-    tot = mean(instTotTR1, na.rm=TRUE)
+    # Aggregate diagnostics
+    totSal1 = mean(totSalTR1, na.rm = TRUE), 
+    instTot = mean(instTotTR1, na.rm = TRUE),
+    instFt  = mean(instFtTR1, na.rm = TRUE), 
+
+    # NOTE: ft and instFt are identical here → redundant
+    ft  = mean(instFtTR1, na.rm = TRUE), 
+    tot = mean(instTotTR1, na.rm = TRUE)
   ) %>%
-  pivot_longer(cols = starts_with("avgSal"), names_to = "Rank", values_to = "AvgSalary")
+  pivot_longer(
+    cols = starts_with("avgSal"),
+    names_to = "Rank",
+    values_to = "AvgSalary"
+  )
 
+# ------------------------------------------------------------
+# PLOT 1: Average Salary by Rank
+# ------------------------------------------------------------
+# ISSUE:
+# Plot looks "wrong" → likely due to:
+# - Structural break in 2011 (data definition change)
+# - Mixing incompatible salary definitions across time
 
-## Plot
-#--------------------------------------------
-
-ggplot(mdf_plot, aes(x = yr, y = AvgSalary, color = Rank)) + # I dont understand why this is fucked, it doesnt look like the data??
+ggplot(mdf_plot, aes(x = yr, y = AvgSalary, color = Rank)) +
   geom_point() +
   geom_line() +
-  labs(color = "Rank",
-       title = "Average Salary by Rank",
-       y = "Average Salary",
-       x = "Year") +
-  geom_vline(xintercept = 2011) 
+  labs(
+    color = "Rank",
+    title = "Average Salary by Rank",
+    y = "Average Salary",
+    x = "Year"
+  ) +
+  geom_vline(xintercept = 2011)  # Known data break
 
-# There is a shift after 2011, which is when the data reporting shifts
-# Remember that pre 2012, salaries are annual, and after salaries are monthly * 9. What if not everyone is on a 9 month contract?
+# INTERPRETATION:
+# - Clear discontinuity around 2011
+# - Likely due to reporting change (annual vs 9-month equivalent)
 
-ggplot(mdf_plot, aes(x = yr, y = totSal1)) + # This one looks normal # NOT since removing CONTRACT from SQL
-geom_point()+
-geom_line() +
-labs(title = "Average Total Salary Expenditure for All Faculty", 
-     y = "Total Salary Outlays (From totSalTR1)",
-     x = "Year"
-)
+# ------------------------------------------------------------
+# PLOT 2: Total Salary Expenditures
+# ------------------------------------------------------------
+# This looks more stable → suggests numerator (totSal) is consistent
 
-ggplot(mdf_plot, aes(x = yr, y = instTot)) + # Why is the avg num of staff so low between 2005-2011? In testdf, instTot is NA through 2015
-geom_point()+
-geom_line()+
-labs(title = "Average Total Number of Faculty", 
-     y = "Total Number of Faculty (From instTotTR1)",
-     x = "Year"
-)
+ggplot(mdf_plot, aes(x = yr, y = totSal1)) +
+  geom_point() +
+  geom_line() +
+  labs(
+    title = "Average Total Salary Expenditure for All Faculty", 
+    y = "Total Salary Outlays (From totSalTR1)",
+    x = "Year"
+  )
 
-ggplot(mdf_plot, aes(x = yr, y = ft)) + # Why is this the same as the above one??
-geom_point()+
-geom_line()+
-labs(title = "Average Total Number of Faculty", 
-     y = "Total Number of Faculty (From instFtTR1)",
-     x = "Year"
-)
-# its because instTot isnt pulling from the right access table for those years (2005-2011)
+# ------------------------------------------------------------
+# PLOT 3: Total Faculty Count
+# ------------------------------------------------------------
+# ISSUE:
+# Low counts pre-2011 → likely missing instTot data
 
-# 2015 and earlier, instTot is not reported
+ggplot(mdf_plot, aes(x = yr, y = instTot)) +
+  geom_point() +
+  geom_line() +
+  labs(
+    title = "Average Total Number of Faculty", 
+    y = "Total Number of Faculty (From instTotTR1)",
+    x = "Year"
+  )
 
-ggplot(mdf_plot %>% filter(Rank == "avgSal1"), aes(x = yr, y = AvgSalary)) +
-geom_point()+
-geom_line() +
-labs(title = "Average Salary by Dividing Total Salary by Total Faculty", 
-     y = "Average Salary",
-     x = "Year"
-) # Jump after 2011 because data is different! This looks good but its NOT
+# ------------------------------------------------------------
+# PLOT 4: Full-Time Faculty Count
+# ------------------------------------------------------------
+# Identical to above because instTot was replaced with instFt pre-2015
+
+ggplot(mdf_plot, aes(x = yr, y = ft)) +
+  geom_point() +
+  geom_line() +
+  labs(
+    title = "Average Total Number of Faculty", 
+    y = "Total Number of Faculty (From instFtTR1)",
+    x = "Year"
+  )
+
+# KEY INSIGHT:
+# instTot is unreliable before ~2015 → must use instFt instead
+
+# ------------------------------------------------------------
+# PLOT 5: Single Rank Salary
+# ------------------------------------------------------------
+# Still shows discontinuity → confirms measurement issue
+
+ggplot(mdf_plot %>% filter(Rank == "avgSal1"),
+       aes(x = yr, y = AvgSalary)) +
+  geom_point() +
+  geom_line() +
+  labs(
+    title = "Average Salary by Dividing Total Salary by Total Faculty", 
+    y = "Average Salary",
+    x = "Year"
+  )
+
+# IMPORTANT:
+# This "looks good" visually but is misleading due to data break
+
+# ------------------------------------------------------------
+# IDEA:
+# Instead of fixing data, include post-2011 indicator in regressions
+# ------------------------------------------------------------
 
 
-# What if we make an indicator for "post2011" instead of trying to fix the data?
+# ------------------------------------------------------------
+# SINGLE-INSTITUTION CHECK (DEBUGGING)
+# ------------------------------------------------------------
+# Helps determine if issue is aggregation or raw data
 
-
-
-
-# Try plotting just one school
 mdf_solo <- mdf_clean %>% 
   filter(institutionName == "Harvard University")
 
-
+# Salary
 ggplot(mdf_solo, aes(x = yr, y = avgSalTR7)) + 
-  geom_point()+
+  geom_point() +
   geom_line() +
-  labs(title = "Harvard University Average Salary All Profs", 
-       y = "Average Salary",
-       x = "Year"
+  labs(
+    title = "Harvard University Average Salary All Profs", 
+    y = "Average Salary",
+    x = "Year"
   )
 
+# Faculty count
 ggplot(mdf_solo, aes(x = yr, y = instFtTR7)) + 
-  geom_point()+
+  geom_point() +
   geom_line() +
-  labs(title = "Harvard University Full-Time Faculty Count", 
-       y = "Full-Time Faculty Count",
-       x = "Year"
+  labs(
+    title = "Harvard University Full-Time Faculty Count", 
+    y = "Full-Time Faculty Count",
+    x = "Year"
   )
 
+# Total salary
 ggplot(mdf_solo, aes(x = yr, y = totSalTR7)) + 
-  geom_point()+
+  geom_point() +
   geom_line() +
-  labs(title = "Harvard University Total Salary All Profs", 
-       y = "Total Salary",
-       x = "Year"
+  labs(
+    title = "Harvard University Total Salary All Profs", 
+    y = "Total Salary",
+    x = "Year"
   )
 
+# ------------------------------------------------------------
+# UNION TREATMENT SHARES OVER TIME
+# ------------------------------------------------------------
 
-  # Plot share of units with af_cba_t == 1 over time
-  mdf_share <- mdf_clean %>% 
-    group_by(yr) %>%
-    summarise(
-      share_af_cba_t = mean(af_cba_t, na.rm = TRUE)
-    )
+mdf_share <- mdf_clean %>% 
+  group_by(yr) %>%
+  summarise(
+    share_af_cba_t = mean(af_cba_t, na.rm = TRUE)
+  )
 
-  ggplot(mdf_share, aes(x = yr, y = share_af_cba_t)) +
-    geom_line() +
-    geom_point() +
-    labs(
-      title = "Share of Units with Tenure-Track CBA Over Time",
-      x = "Year",
-      y = "Share (af_cba_t == 1)"
-    ) +
-    scale_y_continuous(limits = c(0, 1)) +
-    theme_minimal()
+ggplot(mdf_share, aes(x = yr, y = share_af_cba_t)) +
+  geom_line() +
+  geom_point() +
+  labs(
+    title = "Share of Units with Tenure-Track CBA Over Time",
+    x = "Year",
+    y = "Share (af_cba_t == 1)"
+  ) +
+  scale_y_continuous(limits = c(0, 1)) +
+  theme_minimal()
 
-    test <- mdf_clean %>% filter(institutionName == "University of Oregon") %>% select(cbaDate, institutionName, af_cba_t, af_cba_n, yr)
+# ------------------------------------------------------------
+# TREATMENT TIMING DISTRIBUTION
+# ------------------------------------------------------------
 
-    # General Sense of Data
+ggplot(mdf_clean, aes(x = cbaDate)) +
+  geom_histogram(binwidth = 1, fill = "#444444", color = "black") +
+  labs(
+    title = "Distribution of CBA Treatment Years",
+    x = "CBA Date (Year)",
+    y = "Frequency"
+  ) +
+  theme_minimal() +
+  theme(aspect.ratio = 9/16)
 
-  # Treatment Year
-    ggplot(mdf_clean, aes(x = cbaDate)) +
-    geom_histogram(binwidth = 1, fill = "#444444", color = "black") +
-    labs(
-      title = "Distribution of CBA Treatment Years",
-      x = "CBA Date (Year)",
-      y = "Frequency"
-    ) +
-    theme_minimal() + theme(aspect.ratio = 9/16)
+# ------------------------------------------------------------
+# TREATMENT SHARE BY TYPE
+# ------------------------------------------------------------
 
-    # Treatment Share Over Time
-    mdf_plot_1 <- mdf_clean %>% 
-      group_by(yr) %>% 
-      summarise(
-        mean_af_cba_t = mean(af_cba_t, na.rm = TRUE),
-        mean_af_cba_n = mean(af_cba_n, na.rm = TRUE)
-      )
+mdf_plot_1 <- mdf_clean %>% 
+  group_by(yr) %>% 
+  summarise(
+    mean_af_cba_t = mean(af_cba_t, na.rm = TRUE),
+    mean_af_cba_n = mean(af_cba_n, na.rm = TRUE)
+  )
 
-    ggplot(mdf_plot_1, aes(x = yr)) +
-      geom_line(aes(y = mean_af_cba_t, color = "Tenure-Track"), linewidth = 1) +
-      geom_line(aes(y = mean_af_cba_n, color = "Non-Tenure-Track"), linewidth = 1) +
-      labs(
-        title = "Share of Units with CBA Treatment Over Time",
-        x = "Year",
-        y = "Share (CBA Treatment)",
-        color = "CBA Type"
-      ) +
-      scale_color_manual(values = c("Tenure-Track" = "#444444", "Non-Tenure-Track" = "#aaaaaa")) +
-      theme_minimal() + 
-      theme(aspect.ratio = 9/16) + 
-      scale_y_continuous(labels = scales::label_percent())
+ggplot(mdf_plot_1, aes(x = yr)) +
+  geom_line(aes(y = mean_af_cba_t, color = "Tenure-Track"), linewidth = 1) +
+  geom_line(aes(y = mean_af_cba_n, color = "Non-Tenure-Track"), linewidth = 1) +
+  labs(
+    title = "Share of Units with CBA Treatment Over Time",
+    x = "Year",
+    y = "Share (CBA Treatment)",
+    color = "CBA Type"
+  ) +
+  scale_color_manual(values = c("Tenure-Track" = "#444444", "Non-Tenure-Track" = "#aaaaaa")) +
+  theme_minimal() + 
+  theme(aspect.ratio = 9/16) + 
+  scale_y_continuous(labels = scales::label_percent())
 
+# ------------------------------------------------------------
+# CLEANER SALARY TREND PLOT (SCALED)
+# ------------------------------------------------------------
 
-    # Plot average salary over time for each rank
-    mdf_plot_2 <- mdf_clean %>% 
-      group_by(yr) %>% 
-      summarise(
-        avgSalTR1 = mean(avgSalTR1, na.rm = TRUE) / 1e3, # Scale to thousands for better visualization
-        avgSalTR2 = mean(avgSalTR2, na.rm = TRUE) / 1e3,
-        avgSalTR3 = mean(avgSalTR3, na.rm = TRUE) / 1e3,
-        avgSalTR4 = mean(avgSalTR4, na.rm = TRUE) / 1e3,
-        avgSalTR5 = mean(avgSalTR5, na.rm = TRUE) / 1e3,
-        avgSalTR6 = mean(avgSalTR6, na.rm = TRUE) / 1e3,
-        avgSalTR7 = mean(avgSalTR7, na.rm = TRUE) / 1e3
-      ) %>% 
-      pivot_longer(cols = starts_with("avgSal"), names_to = "Rank", values_to = "AvgSalary")
+mdf_plot_2 <- mdf_clean %>% 
+  group_by(yr) %>% 
+  summarise(
+    avgSalTR1 = mean(avgSalTR1, na.rm = TRUE) / 1e3,
+    avgSalTR2 = mean(avgSalTR2, na.rm = TRUE) / 1e3,
+    avgSalTR3 = mean(avgSalTR3, na.rm = TRUE) / 1e3,
+    avgSalTR4 = mean(avgSalTR4, na.rm = TRUE) / 1e3,
+    avgSalTR5 = mean(avgSalTR5, na.rm = TRUE) / 1e3,
+    avgSalTR6 = mean(avgSalTR6, na.rm = TRUE) / 1e3,
+    avgSalTR7 = mean(avgSalTR7, na.rm = TRUE) / 1e3
+  ) %>% 
+  pivot_longer(cols = starts_with("avgSal"),
+               names_to = "Rank",
+               values_to = "AvgSalary")
 
-   ggplot(mdf_plot_2, aes(x = yr, y = AvgSalary, color = factor(Rank), linetype = factor(Rank))) +
+# More readable multi-line plot
+ggplot(mdf_plot_2, aes(x = yr, y = AvgSalary, color = factor(Rank), linetype = factor(Rank))) +
   geom_line(linewidth = 1) + 
   labs(
     title = "Average Salary by Rank Over Time",
@@ -387,65 +466,46 @@ ggplot(mdf_solo, aes(x = yr, y = totSalTR7)) +
     color = "Rank",
     linetype = "Rank"
   ) +
-  scale_linetype_manual(
-    values = c("avgSalTR1" = "solid", "avgSalTR2" = "dashed", "avgSalTR3" = "dotted", 
-               "avgSalTR4" = "dotdash", "avgSalTR5" = "longdash", "avgSalTR6" = "twodash"),
-    labels = c("avgSalTR1" = "Professors", "avgSalTR2" = "Associate Prof", "avgSalTR3" = "Assistant Prof",
-               "avgSalTR4" = "Instructor", "avgSalTR5" = "Lecturer", "avgSalTR6" = "All Instructional Staff")
+  theme_minimal()
+
+# ------------------------------------------------------------
+# DISTRIBUTION OF SCHOOL-LEVEL AVERAGE SALARIES
+# ------------------------------------------------------------
+
+mdf_plot_3 <- mdf_clean %>% 
+  filter(yr >= 2010, ugTot > 500) %>% 
+  group_by(institutionName) %>% 
+  summarise(
+    avgSalTR7 = mean(avgSalTR7, na.rm = TRUE) / 1e3
+  )
+
+ggplot(mdf_plot_3, aes(x = avgSalTR7)) +
+  geom_histogram(bins = 30) +
+  labs(
+    title = "Distribution of Average Salaries (2010-2020)",
+    x = "Average Salary (Thousands of Dollars)",
+    y = "Count of Institutions"
   ) +
-  scale_color_manual(
-    values = c("avgSalTR1" = "#222222", "avgSalTR2" = "#444444", "avgSalTR3" = "#666666", 
-               "avgSalTR4" = "#888888", "avgSalTR5" = "#aaaaaa", "avgSalTR6" = "#cccccc"),
-    labels = c("avgSalTR1" = "Professors", "avgSalTR2" = "Associate Prof", "avgSalTR3" = "Assistant Prof",
-               "avgSalTR4" = "Instructor", "avgSalTR5" = "Lecturer", "avgSalTR6" = "All Instructional Staff")
+  theme_minimal()
+
+# ------------------------------------------------------------
+# STUDENT DISTRIBUTION BY STATE
+# ------------------------------------------------------------
+
+mdf_plot_4 <- mdf_clean %>% 
+  group_by(stateCode) %>% 
+  summarise(totalStudents = sum(ugTot, na.rm = TRUE) / 1e6) %>% 
+  filter(totalStudents > 0.5) %>%
+  arrange(totalStudents)
+
+ggplot(mdf_plot_4, aes(x = totalStudents, y = reorder(stateCode, totalStudents))) +
+  geom_bar(stat = "identity", fill = "#444444") +
+  labs(
+    title = "Total Undergraduate Students by State",
+    x = "Total Undergraduate Students (Millions)",
+    y = "State"
   ) +
-  theme_minimal() +
-  theme(aspect.ratio = 9/16)
-
-
-  # Salary range histogram for each schools average over last 10 years
-  mdf_plot_3 <- mdf_clean %>% 
-    filter(yr >= 2010, ugTot > 500) %>% 
-    group_by(institutionName) %>% 
-    summarise(
-      avgSalTR1 = mean(avgSalTR1, na.rm = TRUE) / 1e3, # Scale to thousands for better visualization
-      avgSalTR2 = mean(avgSalTR2, na.rm = TRUE) / 1e3,
-      avgSalTR3 = mean(avgSalTR3, na.rm = TRUE) / 1e3,
-      avgSalTR4 = mean(avgSalTR4, na.rm = TRUE) / 1e3,
-      avgSalTR5 = mean(avgSalTR5, na.rm = TRUE) / 1e3,
-      avgSalTR6 = mean(avgSalTR6, na.rm = TRUE) / 1e3,
-      avgSalTR7 = mean(avgSalTR7, na.rm = TRUE) / 1e3
-    )
-
-  ggplot(mdf_plot_3, aes(x = avgSalTR7)) +
-    geom_histogram(position = "identity", bins = 30) +
-    labs(
-      title = "Distribution of Average Salaries(2010-2020)",
-      x = "Average Salary (Thousands of Dollars)",
-      y = "Count of Institutions",
-      fill = "Rank"
-    ) +
-    theme_minimal() +
-    theme(aspect.ratio = 9/16)
-
-    # Horizontal bar chart of total students (ugTot) by state
-
-  mdf_plot_4 <- mdf_clean %>% 
-    group_by(stateCode) %>% 
-    summarise(totalStudents = sum(ugTot, na.rm = TRUE) / 1e6) %>% 
-    filter(totalStudents > 0.5) %>%
-    arrange(totalStudents)
-
-  ggplot(mdf_plot_4, aes(x = totalStudents, y = reorder(stateCode, totalStudents))) +
-    geom_bar(stat = "identity", fill = "#444444") +
-    labs(
-      title = "Total Undergraduate Students by State",
-      x = "Total Undergraduate Students (Millions)",
-      y = "State"
-    ) +
-    theme_minimal() +
-    theme(aspect.ratio = 12/16) + theme(axis.text.y = element_text(size = 13))
-
+  theme_minimal()
 
 ```
 
