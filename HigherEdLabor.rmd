@@ -640,7 +640,7 @@ plotsout[7]
 
 ```
 
-```{r did, cache=TRUE, warning=FALSE, }
+```{r did, cache=TRUE, warning=FALSE }
 dep_vars <- c(
   "logsal1", 
   "logsal2", 
