@@ -17,7 +17,7 @@ bmf_raw <- read.csv("../Research-Data-Storage/Data/NCCS/bmf_master_geocoded.csv"
 # BMF does not appear to have time-series data 
 # BMF is for matching data to other sources
 
-match_candidates <- read.csv("../Research-Data-Storage/Data/match_candidates.csv")
+match_candidates <- read.csv("../Research-Data-Storage/Data/NCCS/match_candidates.csv")
 
 # Shrink BMF to workable size 
 bmf <- bmf_raw %>% 
@@ -74,3 +74,9 @@ for (year in year_range) {
 write.csv(core_combined, file = "../Research-Data-Storage/Data/NCCS/Core_Combined_990_All_Years.csv")
 # Reload data so that you don't have to run this every time
 core_combined <- read.csv("../Research-Data-Storage/Data/NCCS/Core_Combined_990_All_Years.csv")
+
+# match by ein using match_candidates
+mdf <- match_candidates %>% 
+    filter(cand_rank == 1, composite_score > 0.6, name_similarity > 0.8) %>% 
+    rename(ein = "cand_ein") %>%
+    left_join(core_combined %>% filter(year==2000), by = c("ein" = "ein"), relationship = "many-to-many")
