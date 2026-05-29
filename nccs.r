@@ -80,3 +80,9 @@ mdf <- match_candidates %>%
     filter(cand_rank == 1, composite_score > 0.6, name_similarity > 0.8) %>% 
     rename(ein = "cand_ein") %>%
     left_join(core_combined %>% filter(year==2000), by = c("ein" = "ein"), relationship = "many-to-many")
+
+# Shift focus - make a document to easily hand match schools 
+match_candidates_shrunk <- match_candidates %>% 
+    select(inst_name, cand_name, cand_ein, cand_rank)
+
+write.csv(match_candidates_shrunk, file = "../Research-Data-Storage/Data/NCCS/match_candidates_shrunk.csv")
