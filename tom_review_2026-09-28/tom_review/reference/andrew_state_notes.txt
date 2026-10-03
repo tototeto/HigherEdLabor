@@ -1,0 +1,535 @@
+State-by-State Laws
+Good, but outdated 2010 tracker of which states had open public records laws
+Good 2020 article on public university foundations and public records laws
+2025 study of university endowments in FY2024
+
+Key: ✅ = state statute or court case explicitly says public university foundations can be FOIA’d
+🆗 = the state has direct oversight of the foundation instead of FOIA access.
+❓= nobody knows yet. Public records law has not been tested on this front
+❌ = state law does not give FOIA access to public university foundations
+🎯 = this state is doing something right
+
+How am I making these judgement calls? I primarily look at the public records law and their definitions of public bodies, then check the state attorney general opinions and/or public records guide. Sometimes, but not always, I check the higher education statutes for any other law around public university foundations.
+
+Count: 20 ✅, 4 🆗, 14❓, and 12 ❌.
+Oregon ❌ 
+
+2010 AG opinion saying gift letters are not public record. Public university foundations are not public bodies so no disclosure required.
+1988 AG opinion saying some university foundation records are public records. Functionally overruled 😢
+
+https://oregon.public.law/statutes/ors_192.345
+
+“ORS 192.345 conditionally exempts [the following] unless the public interest requires disclosure in the particular instance:
+
+(24) Personal information held by or under the direction of officials of the Oregon Health and Science University or a public university listed in ORS 352.002 about a person who has or who is interested in donating money or property to the Oregon Health and Science University or a public university, if the information is related to the family of the person, personal assets of the person or is incidental information not related to the donation.
+
+(25) The home address, professional address and telephone number of a person who has or who is interested in donating money or property to a public university listed in ORS 352.002.”
+
+Note from the AG’s 2019 Handbook on Public Records:
+“Unlike the exemption in ORS 192.345(24), information need not be held by or under the direction of university officials to qualify for this exemption.”
+Alabama ✅ 🎯
+Alabama public records law has only a few, very specific restrictions on requestable public records (like if the record has information on the operation of critical energy infrastructure), and the gift letter equivalent, “Memorandum of Agreement,” are sent to UA System’s Board of Trustees to agree to, so would be public records. 
+
+I am a big fan of Alabama’s setup. Endowments statewide are held directly by the UA System Pooled Endowment Fund (UASPEF), and they charge a miniscule 0.1% annual fee, with no up-front gift fee. The UASPEF is technically a 501(c)(3) charity like other foundations around the country, but the UA System BoT runs the foundation. The Board’s Manual actually has a lot of great information about their policies and goals with investments. 
+
+Also court case Stone v. Consolidated Publishing Company (1981).
+
+Alaska ❓
+Alaskan statute Section 40.25.350 (definitions for public records law)
+
+(3) “state agency”
+          (A) means a department, institution, board, commission, division, authority, public corporation, committee, or other administrative unit of the executive, judicial, or legislative branch of state government, including the University of Alaska;
+
+Couldn’t find anything else, but it seems like the relationship between the universities and the foundation is set by university policy, not state law. This may be untested legal ground in this state.
+Arizona❓
+ARS 15-1640 [Public university] Public records exemptions; confidential information; historical records; donor records
+
+A. The following records of a university under the jurisdiction of the Arizona board of regents are exempt from title 39, chapter 1, article 2:
+…
+3. All records concerning donors or potential donors to a university, other than the names of the donors and the description, date, amount and conditions of these donations.
+
+
+ARS 15-1670 Appropriations for university research infrastructure facilities, university transfers
+
+J. For the purposes of this section:
+1. "Component unit of the university":
+(a) Means an entity that is legally separate from, but related to, the university and whose primary purpose is to support the university.
+
+(b) Includes a university foundation
+
+Definition does not apply to word “university” across chapter 15.
+
+Arkansas ❌
+Arkansas Attorney General Opinion 2010-136
+
+Q: Does the Arkansas Freedom of Information Act apply to the North Arkansas College Foundation, Inc.? 
+A: From the facts provided by the petitioner, it “appears that the Foundation is not directly supported by public funds. Thus, without such funding, and given the current case law from the Arkansas Supreme Court, a court faced with your question would likely hold that the Foundation is not subject to the FOIA.”
+
+California ✅
+2011 UC Bill SB 8 Senate Bill - ENROLLED
+AFSCME Celebratory Press Release/Explainer after passage
+
+University California Office of the President FAQ arguing against the failed version of the bill from 2010.
+Colorado ✅
+Colorado is a yes, but they do prevent any requests regarding donors and gifts themselves. Spending the money is public record. Acquiring the money via their non-profit corporation status is not public record.
+
+Colorado Open Records Act (C.R.S. 24-72-202)
+(1.6) "Institutionally related foundation" means a nonprofit corporation, foundation, institute, or similar entity that is organized for the benefit of one or more institutions and that has as its principal purpose receiving or using private donations to be held or used for the benefit of an institution. An institutionally related foundation shall be deemed not to be a governmental body, agency, or other public body for any purpose.
+
+“(IV) "Public records" means [...] for an institutionally related foundation, an institutionally related health care foundation, or an institutionally related real estate foundation, all writings relating to the requests for disbursement or expenditure of funds, the approval or denial of requests for disbursement or expenditure of funds, or the disbursement or expenditure of funds, by the institutionally related foundation, the institutionally related health care foundation, or the institutionally related real estate foundation, to, on behalf of, or for the benefit of the institution or any employee of the institution. For purposes of this subparagraph (IV), "expenditure" shall be defined in accordance with generally accepted accounting principles.
+
+Colorado also has a separate and similar "Institutionally related health care foundation" which could also provide support to include OHSU.
+
+“(b) "Public records" does not include:
+…
+(VI) For purposes of an institutionally related foundation, any documents, agreements, or other records or information other than the writings relating to the financial expenditure records specified in subparagraph (IV) of paragraph (a) of this subsection (6).
+
+(VII) For purposes of an institution or an institutionally related foundation:
+
+(A) The identity of, or records or information identifying or leading to the identification of, any donor or prospective donor to an institution or an institutionally related foundation;
+
+(B) The amount of any actual or prospective gift or donation from a donor or prospective donor to an institutionally related foundation;
+
+(C) Proprietary fundraising information of an institution or an institutionally related foundation; or
+
+(D) Agreements or other documents relating to gifts or donations or prospective gifts or donations to an institution or an institutionally related foundation from a donor or prospective donor.”
+
+Connecticut 🆗 🎯
+Very comprehensive. We’re talking thousands of words.
+The foundations themselves are not open to public records requests, but requires a LOT of information to be directed to the state. 
+Different law for the University of Connecticut than the rest of the state. Has different levels of scrutiny based on the size of holdings.
+
+Chapter 47, Section 4-37e-l: University 
+Requires audits, and for audits to be released to public.
+
+Section 4-37f. “(9) If the state agency is The University of Connecticut and the foundation has an endowment fund with a market value that is greater than one million five hundred thousand dollars, the foundation shall annually provide the following [in a legislative report:]
+
+(A) A list of the current members and officers of the governing board of the foundation; 
+(B) a copy of the most recent annual report of the foundation; 
+(C) a copy of the most recent audited financial statements, management letter and audit reports of the foundation that are required under subdivision (8) of this section; 
+(D) a copy of the written agreement between the state agency and the foundation that is required under subdivision (10) of this section; 
+(E) a copy of the written policy required under section 4-37j; 
+(F) a copy of any conflicts of interest policy of the foundation; 
+(G) a copy of the foundation's most recently filed Internal Revenue Service form 990, including all parts and schedules that are required to be made available for public inspection under the Internal Revenue Code of 1986, or any subsequent corresponding internal revenue code of the United States, as amended from time to time; 
+(H) a copy of the bylaws of the foundation; 
+(I) a report of the total number and average size of disbursements made to each public institution of higher education for 
+(i) undergraduate and graduate scholarships, fellowships and awards, 
+(ii) program and research support, 
+(iii) equipment, and 
+(iv) facilities construction, improvements and related expenses; 
+(J) as to any employee of the public institution of higher education for whom the foundation contributes some or all of the salary, wages or fringe benefit expenses, a report listing the position of each such employee and, for each position, the amount of the financial reimbursement by the foundation to the public institutions of higher education for such employee's salary, wages or fringe benefit expenses; 
+(K) the identity of any person, firm, corporation or other entity donating funds or other things of value to the foundation, unless the donor has requested that such donor's identity not be publicly disclosed; and 
+(L) a list of all deanships, professorships, chairs, schools, institutes, centers or facilities of the state agency that were named in recognition of foundation donors upon the approval of the board of trustees of the state agency during the preceding fiscal year. The information delivered under this subdivision shall constitute a public record and shall be disclosed in accordance with the Freedom of Information Act, as defined in section 1-200. Nothing in this subdivision shall require the disclosure of the identity of any person, firm, corporation or other entity that donated or made a commitment to donate funds or other things of value to the foundation prior to July 1, 2017;”
+
+“(10) There shall be a written agreement between the state agency and the foundation that
+(A) addresses any use by the foundation of the agency's facilities and resources including, but not limited to, office space, storage space, office furniture and equipment, utilities, photocopying services, computer systems and the maintenance by the state agency of the books and records of the foundation, provided any such books and records maintained by the state agency shall not be deemed to be public records and shall not be subject to disclosure pursuant to the provisions of section 1-210, 
+(B) provides that the state agency shall have no liability for the obligations, acts or omissions of the foundation, 
+(C) requires the foundation to reimburse the state agency for expenses the agency incurs as a result of foundation operations, if the agency would not have otherwise incurred such expenses, 
+(D) in the case of foundations established for a constituent unit of the state system of higher education or for a public institution of higher education, requires the foundation to establish and adhere to an investment policy and a spending policy that are consistent with sections 45a-535 to 45a-535i, inclusive, 
+(E) on and after July 1, 2017, if the state agency is The University of Connecticut, provides that 
+(i) the total cash compensation to be paid in a fiscal year by the state agency to the foundation shall decrease from the amount paid in the preceding fiscal year or the amount paid in the fiscal year ending June 30, 2016, whichever is greater, by 
+(I) one million dollars when the market value of the foundation's endowment fund as of January first of the preceding fiscal year is equal to or greater than five hundred million dollars but less than seven hundred million dollars, (II) one million five hundred thousand dollars when the market value of such fund as of January first of the preceding fiscal year is equal to or greater than seven hundred million dollars but less than nine hundred million dollars, or 
+(III) three million dollars when the market value of such fund as of January first of the preceding fiscal year is equal to or greater than nine hundred million dollars but less than one billion two hundred fifty million dollars, 
+(ii) no cash compensation shall be paid by the state agency to the foundation when the amount in such foundation's endowment fund as of January first of the preceding fiscal year is equal to or greater than one billion two hundred fifty million dollars, and 
+(iii) if the market value of the foundation's endowment fund as of January first of the preceding fiscal year decreases below any of the thresholds stated in subclause (I), (II) or (III) of clause (i) of this subparagraph, then the amount of the cash payment to the foundation shall be increased to equal the same amount that was paid to the foundation prior to exceeding the threshold in subclause (I), (II) or (III) of clause (i) of this subparagraph, until the July first following a January first on which the market value of the foundation's endowment fund again exceeds such threshold, 
+(F) on and after July 1, 2017, requires the foundation to use reasonable efforts to raise gifts and commitments each fiscal year for student support, including, but not limited to, scholarships, assistantships, fellowships, awards and prizes, that equal not less than fifteen per cent of the total amount of all gifts and commitments raised by the foundation in the same fiscal year, and 
+(G) provides that if the foundation ceases to exist or ceases to be a foundation, as defined in section 4-37e, 
+(i) the foundation shall be prohibited from using the name of the state agency, 
+(ii) the records of the foundation, or copies of such records, shall be made available to and may be retained by the state agency, provided any such records or copies which are retained by the state agency shall not be deemed to be public records and shall not be subject to disclosure pursuant to the provisions of section 1-210, and 
+(iii) there are procedures for the disposition of the financial and other assets of the foundation. If the state agency is a constituent unit, the board of trustees of the constituent unit shall approve such agreement. If the state agency is a public institution of higher education, the board of trustees of the constituent unit which has jurisdiction over the institution shall approve such agreement;”
+
+
+1989's An Act Concerning Private Foundations Established For the Benefit of State Agencies and Institutions: 
+Defines applicable foundations as “An organization, fund or any other legal entity which is (A) exempt from taxation pursuant to Section 501(c)(3) of the Internal Revenue Code of l986, as amended, and (B) established for the principal purpose of receiving of, using private funds for charitable, scientific, cultural, education or related purposes that support or improve a state agency.”
+
+Delaware ❌
+Delaware public records law has a carveout so only the Boards of Trustees of the University of Delaware and Delaware State University are affected.
+Florida 🆗
+University Foundations Statute defines foundations and what they need to report to the state government. Records generated by the foundation itself are exempt, but records that go between the state government and the foundation are not:
+“Other than the auditor’s report, management letter, any records related to the expenditure of state funds, and any financial records related to the expenditure of private funds for travel, all records of the organization and any supplemental data requested by the Board of Governors, the university board of trustees, the Auditor General, and the Office of Program Policy Analysis and Government Accountability shall be confidential and exempt from s. 119.07(1).”
+
+Georgia ✅
+The Georgia Open Records Act of 2012 (link to download) implicitly includes foundations in its definitions, and the access to these records is made explicit when they delineate what cannot be requested:
+
+50-18-72.
+(a) Public disclosure shall not be required for records that are:
+….
+(29) Records maintained by public postsecondary educational institutions in this state and associated foundations of such institutions that contain personal information concerning donors or potential donors to such institutions or foundations; provided, however, that the name of any donor and the amount of donation made by such donor shall be subject to disclosure if such donor or any entity in which such donor has a substantial interest transacts business with the public postsecondary educational institution to which the donation is made within three years of the date of such donation. As used in this paragraph, the term 'transact business' means to sell or lease any personal property, real property, or services on behalf of oneself or on behalf of any third party as an agent, broker, dealer, or representative in an amount in excess of $10,000.00 in the aggregate in a calendar year; and the term 'substantial interest' means the direct or indirect ownership of more than 25 percent of the assets or stock of an entity;
+
+Footnote 92 in Capeloto (2013): 
+Two years before the [above] law was passed, then-Attorney General Thurbert E. Baker wrote a letter to an attorney for the University of Georgia Foundation, stating that the foundation was subject to state open records and meeting laws. “‘I would strongly encourage [the foundation] to find ways to make [its] activities as transparent as possible, and to always comply with the letter and the spirit of the law,’” stated the letter, which was not an official opinion of the office. Attorney General Says Foundation Subject to State Sunshine Laws, REPORTERS COMMITTEE FOR FREEDOM PRESS (Nov. 19, 2003), http://tinyurl.com/o6e6aqx (alterations in original).
+
+Hawaii ❌
+Ruling in Olelo: The Corporation for Community Television v. Office of Information Practices, 2007 case at Supreme Court of Hawaii, states non-profit corporations that support public operations are not agencies as defined in Hawaii’s FOIA equivalent, UIPA.
+
+The University of Hawaii Foundation voluntarily reports far more than Oregon universities do.
+Idaho 🆗
+Idaho State Board of Education policy states
+“Although foundations are private entities and are not subject to the Idaho Public Records Law, foundations, while protecting personal and private information related to private individuals, are encouraged, to the extent reasonable, to be open to public inquiries related to revenue, expenditure policies, investment performance and/or similar non-personal and non-confidential financial or policy information”
+
+“Audits and Reporting Requirements.
+1) The procedure foundations will utilize for ensuring [sic] that regular audits are conducted and reported to the Board. Unless provided for otherwise in the written operating agreement, such audits must be conducted by an independent certified public accountant, who is not a director or officer of the foundation. The independent audit shall be a full scope audit, performed in accordance with generally accepted auditing standards.
+2) The procedure foundations will use for reporting to the institution chief executive officer the following items: 
+a) Regular financial audit report;
+b) Annual report of transfers made to the institution, summarized by department;
+c) Annual report of unrestricted funds received, and of unrestricted funds available for use in that fiscal year; 
+d) A list of foundation officers, directors, and employees;
+e) A list of institution employees for whom the foundation made payments to the institution for supplemental compensation or any other approved purpose during the fiscal year, and the amount and nature of that payment;
+f) A list of all state and federal contracts and grants managed by the foundation; and
+g) An annual report of the foundation’s major activities; 
+(h) An annual report of each real estate purchase or material capital lease, investment, or financing arrangement entered into during the preceding foundation fiscal year for the benefit of the institution; and 
+i) An annual report of any actual litigation involving the foundation during its fiscal year, as well as legal counsel used by the foundation for any purpose during such year. This report should also discuss any potential or threatened litigation involving the foundation.”
+Illinois ✅
+2017 Illinois appellate court rules College of DuPage Foundation is subject to open records requests - Student Press Law Center
+
+Current CoD foundation webpage suggests this is still the law 
+Indiana ❌
+Between ? and x, but leaning towards no because I found no evidence anything overturned the ruling in State Board of Accounts v. Indiana University Foundation, a 1995 case which found the IU Foundation not to be a public agency, because one definition in Indiana state law of a “state agency” is that the body is subject to audits by the state. The Foundation was not subject to audits, so it was prima facie not a public agency. 
+
+However, there’s a second, much broader definition of a “state agency” that the court did not consider. This division defines a “state agency” as any “board, commission, department, division, bureau, committee, agency, office, instrumentality, or authority” that exercises state administrative powers.
+Iowa ✅
+2005, Gannon v. Iowa Board of Regents, Iowa State University Foundation is public, Iowa's highest state court rules - Student Press Law Center
+
+July 2024 advisory opinion of Iowa Public Information Board confirms the Gannon holding is still law. The distinction made here is that foundations are not “government bodies,” but generates public records when they perform government functions.
+Kansas ❌
+Kansas GC Kansas Open Records Act (KORA) webpage “The University of Kansas Endowment Association is a separate entity from the University and their records are not subject to KORA.”
+
+Emporia State University KORA webpage “The ESU Memorial Union and the ESU Foundation are each separate entities from the University and their records are not subject to KORA.”
+Kentucky ✅
+Good round-up of Kentucky State University Foundation fight
+Kentucky State University Foundation has been fighting for 30 years to not be open and have lost at every turn. Multiple attorney general opinions and court cases!
+
+Fun quotes: "There is no reasonable basis for excluding from the definition of a public agency the [KSU] board and its interlocking foundation. An interpretation of K.R.S. 61.870(1) which does not include the Foundation as a public agency is clearly inconsistent with the natural and harmonious reading of K.R.S. 61.870 considering the overall purpose of the Kentucky Open Records law."
+
+KSU Foundation is "a nonprofit fiduciary holding funds for the benefit of a state organization"
+Louisiana ❌
+Specifically passed a law saying these corporations are outside public records law.
+§ 17:3390 
+“Private nonprofit corporations which support public higher education institutions; findings; status; private funds
+A.  The legislature finds that private support enhances the programs, facilities, and research and educational opportunities offered by public institutions of higher education in Louisiana.  Therefore, each higher education management board and institution is hereby encouraged to promote the activities of alumni associations, foundations, and other private, nonprofit organizations that raise private funds for the support of public institutions of higher education.  Further, it is recognized that private, nonprofit organizations under the direction and control of private individuals who support institutions of higher education are effective in obtaining private support for those institutions.
+B.  A nonprofit corporation, whose principal purpose is to support one or more programs, facilities, or research or educational opportunities offered by public institutions of higher education, including but not limited to any nonprofit corporation whose primary purpose is to finance the design, construction, renovation, or equipping of facilities to be leased to such public institutions of higher learning, shall be a private entity that shall not be deemed to be a public or quasi public corporation or an administrative unit, public servant, employee, or agent of any institution of higher education for any purpose whatsoever if it meets all of the following criteria:
+(1)  The majority of the voting members of the corporation's board of directors are not members or employees of a higher education management board.
+(2)  The corporation is under the management and control of a board of directors elected by the members or shareholders of the corporation.
+(3)  The corporation reimburses, either directly or through in-kind services, the cost of housing, personnel, which personnel shall remain public servants for all purposes, and other support furnished to the corporation by any institution of higher education, if any such support is furnished.
+C.  The receipt, investment, or expenditure of public funds shall not affect the private status of any corporation meeting the criteria set forth in Subsection B of this Section; however, books and records of any such corporation, to the extent that such books and records directly pertain to the receipt, investment, or expenditure of public funds, shall be subject to R.S. 44:1 et seq.  No other books and records of any such corporation shall be subject to R.S. 44:1 et seq.
+D.(1)  Alumni associations, alumni foundations, and other private, nonprofit alumni organizations that raise private funds for the support of public institutions of higher education, and nonprofit corporations whose primary purpose is to finance the design, construction, renovation, or equipping of facilities to be leased to such public institutions of higher education, shall have a financial accounting system established pursuant to customary and current accepted accounting standards.  Except as provided in Paragraph (3) of this Subsection, the financial affairs of the organizations shall be audited annually in accordance with generally accepted auditing standards by an independent professional auditor who shall furnish to the legislative auditor copies of his annual audit.
+(2)  With regard to an audit received by the legislative auditor from any nonprofit corporation, the primary purpose of which is to design, construct, renovate, or equip a facility to be leased to a public institution of higher learning which is under the management of the Board of Supervisors of Community and Technical Colleges, the legislative auditor may recommend to the Legislative Audit Advisory Council that an audit be conducted by the legislative auditor pursuant to and in the manner provided in R.S. 24:513.  Upon such recommendation, the Legislative Audit Advisory Council may direct that such an audit be conducted.
+(3)(a)  Any alumni association, alumni foundation, or other private, nonprofit alumni organization that raises private funds for the support of a public institution of higher education which receives seventy-five thousand dollars or less in funds in a fiscal year shall not be required to have an audit.  However, the organization shall execute a certification indicating that it received seventy-five thousand dollars or less in funds in the fiscal year and shall prepare a sworn financial statement.
+(b)  The sworn financial statement required by this Paragraph shall be prepared in accordance with generally accepted accounting principles and include the disclosures required by state and federal regulations.  The sworn financial statement shall include a recital that it presents fairly, in all material respects, the financial condition and results of operations of the organization; that the organization has maintained a system of internal control structure sufficient to safeguard assets and comply with laws and regulations; and that the organization has complied with all laws and regulations or shall acknowledge exceptions thereto.
+(c)  Copies of the certification and sworn financial statement shall be furnished to the legislative auditor.
+E.(1)  Any institution of higher education may permit a private, nonprofit corporation to purchase tickets to any event sponsored by the institution not to exceed twelve percent of the tickets available for the event.
+(2)  In addition to any tickets purchased pursuant to the authorization in Paragraph (1) of this Subsection and only with the prior approval of the appropriate higher education management board, any institution of higher education may permit a private, nonprofit corporation to purchase tickets to any athletic event sponsored by the institution when the event is held in a facility owned by the institution and the tickets provide access to seats or seating areas located in an addition to the facility which is constructed by the corporation.
+(3)  If the corporation pays the full price of admission for which such tickets are sold to other members of the public, then any funds received by the corporation from the resale of the tickets shall not be public funds for any purpose.
+F.  Notwithstanding any other provision of this Section or of other law to the contrary, any request for payments of over one thousand dollars for any single transaction to, or on behalf of, or to reimburse the expense of a public employee of a public higher education institution or a public employee or officer of a management board of a public higher education institution by a nonprofit organization shall be approved in writing by the appropriate public higher education management board in accordance with written policies and procedures.  All requests, approvals, and documents provided to a higher education institution or management board in connection with such requests or approvals, shall be retained by the public higher education institution or public higher education management board and shall be subject to inspection, examination, copying, and reproduction in accordance with the provisions of R.S. 44:1 et seq.
+Acts 1992, No. 1055, §1; Acts 1998, 1st Ex. Sess., No. 125, §1, eff. May 5, 1998; Acts 2004, No. 533, §1, eff. June 25, 2004; Acts 2004, No. 710, §1; Acts 2008, No. 505, §1, eff. June 25, 2008.”
+
+State ex rel Guste v. Nicholls College Foundation (decision here) found that if non-public foundations were using public funds, the expenditure of these funds specifically would be open to public records requests. Did not decide whether foundations are public bodies, although “the evidence leans in favor of the state[‘s]” argument that they are. 
+
+There’s multiple court cases about this from the last two decades that expanded the scope of public access to private entities which perform public duties. Here’s an explainer from the Louisiana Legislative Auditor describing the effect of a recent 2025 ruling in New Orleans Bulldog Society v. Louisiana Society for the Prevention of Cruelty to Animals.
+Maine❓
+Unclear. Can’t find any evidence either way. Has cases like Turcotte v. Humane Society Waterville Area (2014) that considers 501(c)(3) charities, but I can’t see anything on university foundations.
+Maryland ❌
+Maryland AG Public Information Act (PIA) manual reads well, but apparently there was not an ability to make requests during a big scandal at Bowie State University in 1999 that wasn’t fixed.
+
+“Similarly, a nonprofit entity incorporated under the State’s general corporation law may be considered a unit or instrumentality of a political subdivision for purposes of the PIA, if there is a sufficient nexus linking the entity to the local government. See Baltimore Development Corp. v. Carmel Realty Associates, 395 Md. 299, 332-36 (2006) (nonprofit corporation formed to plan and implement long range development strategies in city was subject to substantial control by city and thus was instrumentality of city subject to PIA); Andy’s Ice Cream, Inc. v. City of Salisbury, 125 Md. App. 125, cert. denied, 353 Md. 473 (1999) (Salisbury Zoo Commission subject to PIA, given the Mayor and City Council’s role in the appointment of Commission members, authority over budget and bylaws, and power to dissolve Commission); Letter of Assistant Attorney General Kathryn M. Rowe to Delegate Kevin Kelly (Aug. 3, 2006) (volunteer fire department is not a unit of government subject to the PIA); Letter of Assistant Attorney General Robert N. McDonald to Senator Joan Carter Conway (Oct. 4, 2007) (status of various organizations under the PIA).”
+
+Can’t find a Public Information Act Compliance Board decision or an Open Meetings Compliance Board opinion on university foundations.
+Massachusetts ❓
+Massachusetts statute 950 CMR 32.00: PUBLIC RECORDS ACCESS, definition of “agency”: “Any agency, executive office, department, board, commission, bureau, division or authority of the commonwealth that is identified in M.G.L. c. 66, § 6A and c. 4, § 7, clause Twenty-sixth and makes or receives "public records", as defined in 950 CMR 32.02. Agency includes any person, corporation, association, partnership or other legal entity which receives or expends public funds for the payment or administration of pensions for any current or former employees of the commonwealth or any political subdivision as defined in M.G.L. c. 32, § 1.” Emphasis mine.
+
+Called the Division of Public Records “attorney of the day” hotline for advice, and they said they had no precedent. Suggested we make a request of the President’s Office for foundation information.
+In a request earlier this year, the university claimed exception (u) for a request on donor information.
+
+Capeloto (2015 article in Communication Law and Policy) says they are explicitly banned from being public bodies for public records, but the section they are banned from is for conflicts of interest and other good government policies for members of government.
+
+Part I, Title II, Chapter 15A, Section 37: Foundations created for public institutions of higher education; governing boards; annual reports; audits
+
+“Section 37. (a) As used in this section, the following words shall have the following meanings unless the context clearly requires otherwise:
+
+''Foundation'', an organization which is (a) either (i) a corporation within the meaning of clause (c) of section two of chapter one hundred and eighty and subject to the provisions of said chapter one hundred and eighty, except as herein provided, or (ii) a public charitable trust constituted and operating as such and subject to the requirements of law governing such trusts, except as herein provided; (b) organized and operated exclusively for the benefit of an institution of public higher education; and (c) certified by the board of trustees of the institution which it supports to be operating in a manner consistent with the goals and policies of the institution.
+
+''Institution'', a public institution of higher education in the commonwealth.
+
+(b) A corporation or trust which is not certified as provided herein or whose certification has been revoked by the board of trustees of the institution which it supports, shall not use the name of such institution (i) for fundraising without written permission of the board of trustees of such institution, or (ii) in the name of such corporation or trust.
+
+(c) Each foundation shall have a governing board to oversee its operation. In no event shall institutional trustees and employees constitute one-half or more of the voting members of such foundation's governing board. The governing board of such foundation shall annually file a list of the members and officers of such board with the institution's board of trustees.
+
+(d) The board of trustees of an institution which a foundation supports is authorized to permit the use without compensation of facilities and personnel services of the institution by the foundation; provided, however, that in no event shall an employee of the institution spend more than twenty-five percent of his work hours engaged in services for a foundation.
+
+(e) All gifts from a foundation to an institution shall be approved for acceptance by the board of trustees in accordance with applicable institutional policies. A person soliciting funds or any other thing of value on behalf of a foundation from a person, firm, corporation or other entity shall, at the time of the solicitation, clearly and conspicuously disclose to the potential donor that the donations are to be provided to the foundation and not to an institution and that the donor may request in writing that the donor's identity not be publicly disclosed.
+
+(f) Each foundation shall provide an annual report of its financial accounts prepared in accordance with generally accepted accounting principles to the board of trustees of the institution which it supports. The board of trustees may require any supplemental data relative to the operations of the foundation. The identity of donors who wish to remain anonymous shall be protected and anonymity of such donors shall be maintained in all audit reports. The annual financial report when received by a board of trustees shall be considered a public record as defined in clause twenty-sixth of section seven of chapter four.
+
+(g) The state auditor shall have the authority, upon request by the institution or upon his own initiative, to audit transfers to or expenditures from foundation accounts of public funds, use of employees paid with public funds to staff the foundation and the existence of contracts or agreements between a foundation and an institution.
+
+(h) A foundation certified by an institution's board of trustees under the provisions of this section shall not be deemed to be an agency, board, bureau, department, division, commission, authority or other subdivision of the commonwealth. Members of the governing boards of a foundation who are not already state employees shall not be considered to be state employees for the purposes of chapters two hundred and sixty-eight A and two hundred and sixty-eight B.”
+Michigan ✅
+Jackson v. Eastern Michigan University (1996) creates precedent that foundations in the state are public bodies and must respond to public records requests. This FOIA Handbook, written by the Michigan Attorney General and last updated in 2023, suggests this is still the case a few decades later.
+Minnesota ✅ /❓
+Law review articles and the SPLC says the foundations are open to public records requests, and their claim is the cited basis for other articles saying the same thing. However, the SPLC has never published an article on Minnesota’s foundations, and their own citation in the linked article is Sec. 13.792 of Minnesota statute, which is quoted below. 
+
+13.02 DEFINITIONS
+“Subd. 7a. Government entity. "Government entity" means a state agency, statewide system, or political subdivision.
+Subd. 11. Political subdivision. "Political subdivision" means any [...] nonprofit corporation collects, stores, disseminates, and uses data on individuals because of a contractual relationship with a government entity.”
+Subd. 17. State agency. "State agency" means the state, the University of Minnesota, and any office, officer, department, division, bureau, board, commission, authority, district or agency of the state.”
+
+13.792 PRIVATE DONOR GIFT DATA.
+“The following data maintained by the Minnesota Zoological Garden, the University of Minnesota, the Minnesota State Colleges and Universities, the Regional Parks Foundation of the Twin Cities, State Services for the Blind, the Destination Medical Center Corporation established pursuant to section 469.41, and any related entity subject to chapter 13 are classified as private or nonpublic:
+(1) research information about prospects and donors gathered to aid in determining appropriateness of solicitation and level of gift request;
+(2) specific data in prospect lists that would identify prospects to be solicited, dollar amounts to be requested, and name of solicitor;
+(3) portions of solicitation letters and proposals that identify the prospect being solicited and the dollar amount being requested;
+(4) letters, pledge cards, and other responses received from donors regarding prospective gifts in response to solicitations;
+(5) portions of thank-you letters and other gift acknowledgment communications that would identify the name of the donor and the specific amount of the gift, pledge, or pledge payment;
+(6) donor financial or estate planning information, or portions of memoranda, letters, or other documents commenting on any donor's financial circumstances; and
+(7) data detailing dates of gifts, payment schedule of gifts, form of gifts, and specific gift amounts made by donors.
+
+Names of donors and gift ranges are public data.”
+
+The Foundations supporting the University of Minnesota and the Minnesota State Colleges and Universities, unlike the Regional Park Foundation of the Twin Cities, are not named. The list does end with an addendum for “any related entity subject to chapter 13,” but as the included definitions from Section 13.02 show, private entities are not subject to the chapter. Also, the ending “classified as private or nonpublic” refers to “the following data” from the start of the sentence, not the “related entities.”
+Mississippi ❌
+1998 Attorney General opinion No. 98-0676:
+“The foundations are not agencies or political subdivisions of the State of Mississippi, and the funds raised and collected by them are not public funds as defined by the statute until such time as they are paid over to the universities. See MS AG Op., Layzell (May 14, 1997), attached. The State Auditor has no authority or duty to audit and/or investigate the foundations dedicated in whole or in part to university fundraising. This is true whether or not the foundations are located on university property and whether or not university employees perform work for the foundations.”
+
+2016 Mississippi Ethics Commission complaint from Clarion-Ledger reporter attempting public records request on Jackson State University Development Foundation: based on the 1998 AG opinion, university foundations are not “public bodies,” thus are not subject to public records requests.
+Missouri ✅
+Public records law definition of "Public governmental body" includes “quasi-public governmental bodies” which are non-profits that “a.  Has as its primary purpose to enter into contracts with public governmental bodies, or to engage primarily in activities carried out pursuant to an agreement or agreements with public governmental bodies;”
+Montana❓
+Probably a no but there’s no precedent I can find? University of Montana Foundation Operating Agreement with the university has a lot of language attempting to establish boundaries and ensuring donor privacy, but I see no AG opinions on the subject, nor any public-records-specific guidance on executive branch webpages.
+Nebraska❓
+No AG opinion on this particular question.
+
+“A four-part functional equivalency test is the appropriate analytical model for determining whether a private entity which has an ongoing relationship with a governmental entity can be considered [...] subject to disclosure upon request under Nebraska's public records laws. The factors to be considered in applying this test are (1) whether the private entity performs a governmental function, (2) the level of governmental funding of the private entity, (3) the extent of government involvement with or regulation of the private entity, and (4) whether the private entity was created by the government.” Frederick v. City of Falls City, 289 Neb. 864, 857 N.W.2d 569 (2015).
+
+“requested materials in a private party's possession are public records if the following requirements are met: (1) The public body, through a delegation of its authority to perform a government function, contracted with a private party to carry out the government function; (2) the private party prepared the records under the public body's delegation of authority; (3) the public body was entitled to possess the materials to monitor the private party's performance; and (4) the records are used to make a decision affecting public interest. Evertson v. City of Kimball, 278 Neb. 1, 767 N.W.2d 751 (2009).
+
+
+Nevada ✅
+University foundations are defined in state statute by NRS 396.405, which is inside the chapter of state law regarding the Nevada System of Higher Education. 
+
+The Nevada public records laws say “educational foundation[s], as defined in NRS 388.750, to the extent that the foundation is dedicated to the assistance of public schools;” are considered normal  “government entities” that are subject to the state’s open records laws. University foundations, in the state of Nevada, include community college foundations. 
+Within the definition of the foundations, particular caveats are included: “A university foundation is not required to disclose the name of any contributor or potential contributor to the university foundation, the amount of his or her contribution or any information which may reveal or lead to the discovery of his or her identity. The university foundation shall, upon request, allow a contributor to examine, during regular business hours, any record, document or other information of the foundation relating to that contributor.”
+New Hampshire❓
+VI. "Public body"
+“(e) Any corporation that has as its sole member the state of New Hampshire, any county, town, municipal corporation, school district, school administrative unit, village district, or other political subdivision, and that is determined by the Internal Revenue Service to be a tax exempt organization pursuant to section 501(c)(3) of the Internal Revenue Code.”
+
+Professional Firefighters of New Hampshire v. Healthtrust, Inc. (2004) established that 501(c)(3) charities serving governmental purposes could be subject to NH Right-to-Know law.
+
+New Jersey ✅
+Higher education exception to NJ Open Public Records Act: “records of pursuit of charitable contributions or records containing the identity of a donor of a gift if the donor requires non-disclosure of the donor's identity as a condition of making the gift provided that the donor has not received any benefits of or from the institution of higher education in connection with such gift other than a request for memorialization or dedication;”
+
+2012 decision of the Government Records Council in Dusenberry v. New Jersey City University Foundation found “[a]lthough the NJCU Foundation is a 501(c)(3) nonprofit organization, the Foundation was created as an instrumentality of NJCU to support the University’s development, and thus is a public agency for the purposes of OPRA.”
+New Mexico ✅
+Hey, good news! Just last September, the NM Supreme Court orders foundation records be public.
+Higher education in general is definitely open to public records requests (1996 Op. Att'y Gen. No. 96-01AL), and universities can set up non-profit foundations, (1973 Op. Att'y Gen. No. 73-43), in which case the foundations, as a body set up by a state institution, would definitely be open to public records requests. However, many foundations are created by independent third parties and coordinate with the universities. 
+From 2015 AG guide to Inspection of Public Records Act:
+“F. ‘public body’ means the executive, legislative and judicial branches of state and local governments and all advisory boards, commissions, committees, agencies or entities created by the constitution or any branch of government that receives any public funding, including political subdivisions, special taxing districts, school districts and institutions of higher education;”
+New York ✅
+NY Freedom of Information Law definitions
+“3. ‘Agency’ means any state or municipal department, board, bureau, division, commission, committee, public authority, public corporation, council, office or other governmental entity performing a governmental or proprietary function for the state or any one or more municipalities thereof, except the judiciary or the state legislature.“
+
+NY Committee on Open Government advisory opinions have repeatedly found the Research Foundation of the City University of New York (FOIL-AO-12685, 2001; FOIL-AO-13140, 2002; FOIL-AO-17411, 2007) and the Stony Brook Foundation (FOIL-AO-16851, 2008) covered by FOIL.
+North Carolina❓ 
+The endowments for the UNC system are held by the UNC Investment Fund, which has refused public records requests in the past, but also uses its government-affiliated status to its own benefit. I was unable to find if the Fund’s claims were ever legally tested. Did not seem so by at least 2016. Fund control is also ingrained with UNC system governance, so it’s up in the air on the final status. 
+
+Link to request information (from the university employee side?) about the UNC Investment Fund.
+
+A 2000 AG opinion found that employees of a university foundation are not state employees, and that foundations are not part of the “State” government, under the Defense of State Employees Act. However, the definition of a state agency for the public records act is broader.
+
+NC law Chapter 132-1(a) “‘Public record’ or ‘public record’  shall mean all documents, papers, letters, maps, books, photographs, films, sound recordings, magnetic or other tapes, electronic data-processing records, artifacts, or other documentary material, regardless of physical form or characteristics, made or received pursuant to law or ordinance in connection with the transaction of public business by any agency of North Carolina government or its subdivisions. Agency of North Carolina government or its subdivisions shall mean and include every public office, public officer or official (State or local, elected or appointed), institution, board, commission, bureau, council, department, authority or other unit of government of the State or of any county, unit, special district or other political subdivision of government.”
+North Dakota ❌
+In 2017, new law passed to exclude gift records even if foundations were found to be public entities, as they were in several previous attorney general opinions
+
+44-04-18.15. “Fundraising and donor records exempt.
+1. Any private donor or prospective donor name, address, telephone number, electronic mail address, estate planning information, tax record or financial information, or other personal information or correspondence received or retained by a board of higher education or university system officer or employee or by an affiliated nonprofit organization that provides support to and is organized and operated for the benefit of an institution under the authority of the board of higher education is exempt.
+2. Any private donor or prospective donor name, address, telephone number, electronic mail address, estate planning information, tax record or financial information, or other personal information or correspondence received or retained by a nonprofit organization that is a public entity is exempt.
+3. For the purposes of this section, "financial information" includes data that provides details regarding a gift, a payment schedule of a gift, the form of a gift, or the specific amount of a gift made by a donor.”
+Ohio ✅
+Holding in State ex rel. Toledo Blade v. University of Toledo Foundation (1992) finds university foundations subject to Ohio public records and open meetings law.
+
+There is an exemption in the public records law for “(n) Donor profile records;” which is in the vein of protecting personal information like student transcripts, not their gift amounts or their gift letters.
+Oklahoma 🆗
+70 O.S. §3907 “It is the intent of the Legislature that trustees of college- and university-related foundations establish priorities and guidelines for the use of unrestricted income. It is the further intent of the Legislature that unrestricted income be used exclusively for the enrichment of the academic programs and purposes of the institution or institutions to which such foundation is related.”
+
+70 O.S. §4306 “A. All state higher educational institutions, constituent agencies or other entities are hereby authorized to accept and receive any and all grants or contracts of all kinds, gifts, devises and bequests of money or property, either real or personal, which may be, or which may heretofore have been tendered to them by grant or contract, will or gift, conditionally or unconditionally; and the Board of Regents of said institutions, constituent agencies or other entities are hereby directed, authorized and empowered to hold such funds or property in trust, or invest or sell them and use either principal or interest or the proceeds of sale for the benefit of such institutions or entities or the students or others for whose benefit such institutions or entities are conducted; all in any manner which is consistent with the terms of the gift as stipulated by the donor and with the provisions of any applicable laws. Money donated to a college- or university-related foundation for student scholarships or grants to students of an institution of The Oklahoma State System of Higher Education shall not be loaned or given to any regent, officer, director, or employee of such foundation or institution or to any relative of such person within the third degree of affinity or consanguinity. The following, however, shall not be prohibited:
+
+1. Students in the employ of such foundation or institution may be given scholarships; and
+2. Scholarships may be awarded to an otherwise disqualified relative of any faculty member, staff employee, foundation or institution officer or maintenance worker of such foundation or institution if such relative is meritoriously qualified.
+
+B. Any person willfully violating the prohibitions of subsection A of this section shall be guilty of a felony punishable by imprisonment in the State Penitentiary for a period of not more than five (5) years or by a fine of not more than Twenty Thousand Dollars ($20,000.00), or by both such fine and imprisonment. Any person found guilty of said violations shall also be subject to immediate removal from office or employment where applicable.
+
+C. The Oklahoma State Regents for Higher Education, any institution or agency of The Oklahoma State System of Higher Education or the regents or governing board of such institution or agency shall not directly or indirectly transfer any funds to any college- or university-related foundation or render services or provide any thing of value to any such foundation without receiving documented adequate payment or reimbursement therefor according to written contract; provided, nothing herein shall be construed as prohibiting payment by the institution or agency of claims for expenses of fund raising for the benefit of the institution or agency by state employees if such fund raising activities are approved in advance by the governing board of regents responsible for such institution or agency and made a part of the minutes of the meeting of the board.
+
+D. Neither the Oklahoma State Regents for Higher Education nor any institution or agency of The Oklahoma State System of Higher Education shall receive any funds, services, or thing of value from any college- or university-related foundation which has any officers or employees who are officers or employees of any institution or agency of the State System or State Regents unless such foundation makes all its financial records and documents, including work papers, except for names of donors, available to auditors who are performing audits of the institution or agency.
+
+
+51 O.S. §24A.16a “Institutions or agencies of The Oklahoma State System of Higher Education may keep confidential all information pertaining to donors and prospective donors to or for the benefit of the institutions or agencies.”
+
+
+2002 OK AG opinion sets test for whether corporations are subject to the Oklahoma Open Meetings Law. Requires “A. they do not submit itemized invoices or claims for goods provided or services rendered to receive public funds, but instead receive a direct allocation of public funds from tax or other revenues; and
+B. there is no quid pro quo or direct relationship to the amount of goods provided or services performed by the private organizations and the funds they are allocated; i.e., the organizations receive funds regardless of whether they provide goods or perform services.”
+
+1973 OK AG opinion, but above law has been implemented since: University of Oklahoma Foundation, Inc. is not a state agency.
+Pennsylvania ✅
+2011 Judge orders release of Pa. university foundation's donation records - Student Press Law Center
+September 2024 updated case law index still includes it.
+Rhode Island ❓ 
+RI General Laws §38-2-2​​ “(1) “Agency” or “public body” means any executive, legislative, judicial, regulatory, or administrative body of the state, or any political subdivision thereof; including, but not limited to: any department, division, agency, commission, board, office, bureau, authority; any school, fire, or water district, or other agency of Rhode Island state or local government that exercises governmental functions; any authority as defined in § 42-35-1(b); or any other public or private agency, person, partnership, corporation, or business entity acting on behalf of and/or in place of any public agency.”
+
+Exemptions:
+“(G) Any records that disclose the identity of the contributor of a bona fide and lawful charitable contribution to the public body whenever public anonymity has been requested of the public body with respect to the contribution by the contributor.
+…
+(I) Reports and statements of strategy or negotiation with respect to the investment or borrowing of public funds, until such time as those transactions are entered into.”
+South Carolina ✅
+Section 30-4-20 Definitions “(a) "Public body" means any department of the State, a majority of directors or their representatives of departments within the executive branch of state government as outlined in Section 1-30-10, any state board, commission, agency, and authority, any public or governmental body or political subdivision of the State, including counties, municipalities, townships, school districts, and special purpose districts, or any organization, corporation, or agency supported in whole or in part by public funds or expending public funds, including committees, subcommittees, advisory committees, and the like of any such body by whatever name known, and includes any quasi-governmental body of the State and its political subdivisions, including, without limitation, bodies such as the South Carolina Public Service Authority and the South Carolina State Ports Authority.”
+
+Section 30-4-40 Matters Exempt from Disclosure “(11) Information relative to the identity of the maker of a gift to a public body if the maker specifies that his making of the gift must be anonymous and that his identity must not be revealed as a condition of making the gift. For the purposes of this item, "gift to a public body" includes, but is not limited to, gifts to any of the state-supported colleges or universities and museums. With respect to the gifts, only information which identifies the maker may be exempt from disclosure. If the maker of any gift or any member of his immediate family has any business transaction with the recipient of the gift within three years before or after the gift is made, the identity of the maker is not exempt from disclosure.”
+
+In Weston v. Carolina Development and Research Foundation (1991), state Supreme Court finds university foundations are subject to SC FOIA.
+
+2022 AG opinion citing Weston as precedent
+South Dakota ❓
+Public records law
+
+No reference to foundations or public charities in attorney general opinions. Found 2013 law which authorized a donation of land from the University of South Dakota Foundation to (USD), which could suggest legal separation, but nothing official.
+Tennessee ✅
+ The University of Tennessee Foundation starts business in 2001, claims they aren’t subject to public records requests, and almost instantly have a big scandal. They voluntarily open their meetings and records in 2003. From 2003-2007 and in 2011, the state ups their scrutiny of foundations, passing several laws, including one in 2003 that would allow the state to audit university foundation finances, and one in 2007 that specifies some donor records held by public universities or university foundations are not public information. This would imply that some other donor records held by foundations are public record by 2007, however, the first court case I could find making this clear is from 2011.
+
+Public records law for university foundations §49-7-140 Confidentiality of gift records
+“Records and information that concern gifts to public institutions of higher education or foundations established under § 49-7-107, and that include the name, address, telephone number, social security number, driver license information, or any other personally identifiable information about the donor or members of the donor's family, shall not be open for public inspection. Public institutions of higher education and foundations established under § 49-7-107 shall create an annual report of gifts received during each twelve-month period, including the amount of the gift and a general description of its use, but not including any personally identifiable information about the donor or members of the donor's family. Upon request, the annual report of gifts shall be made available for inspection by any citizen of Tennessee. Upon request, the attorney general and reporter may review all records or information concerning gifts to public institutions of higher education, and to foundations established under § 49-7-107, including all personally identifiable information about the donor or members of the donor's family.”
+
+University foundation law §49-7-107 Establishment of foundations - Code of ethics
+“(a) The board of regents, the board of trustees of the University of Tennessee, and state university boards are authorized and empowered to take such steps, to enter into such agreements, and to do whatever they deem necessary to the establishment of foundations for the state institutions of higher education under their control.
+(b) All annual reports and all books of accounts and financial records of a foundation created for the benefit of a public institution of higher education shall be subject to audit by the comptroller of the treasury.
+(c) Any foundation created pursuant to this section shall establish and adopt a code of ethics that shall apply to and govern the conduct of all members of the foundation board.
+(d)
+(1) Notwithstanding any other law to the contrary, by a two-thirds (2/3) vote of its membership, the foundation board may remove any appointed member of the foundation board for a material violation of the code of ethics.
+(2) A foundation board vote to remove a member shall only be taken after the accused member has been afforded an opportunity to address the board in connection with the alleged violation.
+(3) If a member is removed in accordance with this subsection (d), the position shall be considered vacant and the vacancy shall be filled as provided by the foundation's bylaws.”
+
+49-9-113 Foundations for the benefit of the University of Tennessee
+
+“(a) The University of Tennessee board of trustees is expressly authorized and empowered to designate one (1) or more foundations established to support the university, pursuant to § 49-7-107, or any existing foundation created to support a campus of the university, to receive and hold private gifts for support of the university unless the donor has specifically directed in writing that a gift be received and held by the university.
+(b) The University of Tennessee is expressly authorized and empowered to enter into a fee-for-services agreement with one (1) or more foundations established to support the university, pursuant to § 49-7-107, or any existing foundation created to support a campus of the university, under which the foundation will provide development and alumni services for the university. An agreement for services under this subsection (b) shall be subject to the prior approval of the University of Tennessee board of trustees and to all prior approvals required by state laws, rules, or regulations.
+(c) The University of Tennessee is expressly authorized and empowered to enter into an agreement to lease university employees to one (1) or more foundations established to support the university, pursuant to § 49-7-107, or any existing foundation created to support a campus of the university, to carry out the mission of the foundation, including, but not limited to, providing development and alumni services for the university. Employees leased under the authority of this subsection (c) shall remain eligible for participation in all university benefit programs for which they are otherwise eligible. An agreement for the lease of employees under the authority of this subsection (c) shall be subject to the prior approval of the University of Tennessee board of trustees and to the prior approval of the attorney general and reporter as to form and legality.
+(d) The University of Tennessee is expressly authorized and empowered to enter into a fee-for-services agreement to provide services, including, but not limited to, human resources services, information technology services, and accounting and financial services, to one (1) or more foundations established to support the university, pursuant to § 49-7-107, or any existing foundation created to support a campus of the university.
+(e)
+(1) All full board meetings of any foundation established to support the University of Tennessee, pursuant to § 49-7-107, or any existing foundation created to support a campus of the University of Tennessee, shall be open to the public except for executive sessions that include, but are not limited to, any of the following matters: litigation; audits or investigations; human resource issues; gift acceptance deliberations; board training; governance; donor strategy sessions; and security measures.
+(2) All expenditures by any foundation established to support the University of Tennessee, pursuant to § 49-7-107, or any existing foundation created to support a campus of the University of Tennessee, shall be open for public inspection upon specific request.
+(f) Nothing in this section shall be deemed or construed to waive or abrogate in any way the sovereign immunity of the state, the university or any officer or employee of the state or the university or to deprive any officer or employee of the state or university of any other immunity to which the officer or employee is otherwise entitled under state law.”
+Texas ✅
+Open Records Decision No. 590 (1991) ordered the records of the West Texas State University Development Foundation open to the public.
+
+Comprehensive 2024 Public Information Handbook contains most of the following information.
+
+§ 552.003. Definitions
+“In this chapter:
+(1) “Governmental body”:
+(A) means:
+(i) a board, commission, department, committee, institution, agency, or office that is
+within or is created by the executive or legislative branch of state government and
+that is directed by one or more elected or appointed members;
+(ii) a county commissioners court in the state;
+(iii) a municipal governing body in the state;
+(iv) a deliberative body that has rulemaking or quasi-judicial power and that is
+classified as a department, agency, or political subdivision of a county or
+municipality;
+(v) a school district board of trustees;
+(vi) a county board of school trustees;
+(vii) a county board of education;
+(viii) the governing board of a special district;
+(ix) the governing body of a nonprofit corporation organized under Chapter 67, Water
+Code, that provides a water supply or wastewater service, or both, and is exempt
+from ad valorem taxation under Section 11.30, Tax Code;
+(x) a local workforce development board created under Section 2308.253;
+(xi) a nonprofit corporation that is eligible to receive funds under the federal
+community services block grant program and that is authorized by this state to
+serve a geographic area of the state;
+(xii) a confinement facility operated under a contract with any division of the Texas
+Department of Criminal Justice;
+(xiii) a civil commitment housing facility owned, leased, or operated by a vendor under
+contract with the state as provided by Chapter 841, Health and Safety Code;
+(xiv) an entity that receives public funds in the current or preceding state fiscal year to
+manage the daily operations or restoration of the Alamo, or an entity that oversees
+such an entity; and
+(xv) the part, section, or portion of an organization, corporation, commission,
+committee, institution, or agency that spends or that is supported in whole or in
+part by public funds;”
+
+Higher education donor privacy exemption, Section 552.1235 of (Texas) Government Code:
+“(a) The name or other information that would tend to disclose the identity of a person,
+other than a governmental body, who makes a gift, grant, or donation of money or
+property to an institution of higher education or to another person with the intent
+that the money or property be transferred to an institution of higher education is
+excepted from the requirements of Section 552.021.
+(b) Subsection (a) does not except from required disclosure other information relating
+to gifts, grants, and donations described by Subsection (a), including the amount or
+value of an individual gift, grant, or donation.”
+
+There are no cases or formal opinions regarding this exemption (pg 152 of Texas 2024 Public Information Handbook), but there is one mention of it as only a small part of the informal ruling in Open Records Letter No. 2003-8748.
+Utah❓
+Utah appears not to have university foundations? Giving is done completely through the universities, which are subject to Utah public record laws. Not seeing any exemptions for donations.
+Vermont❓
+1 V.S.A. § 317 (2) “Public agency” or “agency” means any agency, board, department, commission, committee, branch, instrumentality, or authority of the State or any agency, board, committee, department, branch, instrumentality, commission, or authority of any political subdivision of the State.
+
+Maybe 5 total attorney general opinions in the last 25 years, and no sunshine committee. Nothing about donations listed in the latest legislative report on/compilation of Public Record Act exemptions
+Virginia ✅
+Annual reporting of expenditures by university foundations is required (https://lis.virginia.gov/cgi-bin/legp604.exe?201+ful+CHAP0511, 
+§ 23.1-108. Foundations; annual reporting requirements) after a loss in the court cases to get access to the George Mason University Foundation.
+
+Universities must have a policy regarding how they consider and accept gifts which attempt to alter the operation of the university. The records around the terms and conditions of these gifts are public record, but I don’t know general if university foundations are considered open to public record requests (https://lis.virginia.gov/cgi-bin/legp604.exe?201+ful+CHAP0691,https://law.lis.virginia.gov/vacode/23.1-1304.1/).
+“The governing board of each public institution of higher education shall establish a policy for the acceptance of terms and conditions associated with any donation, gift, or other private philanthropic support. Each such policy shall include an administrative process for reviewing, accepting, and documenting terms and conditions associated with (i) gifts that direct academic decision-making and (ii) gifts of $1,000,000 or more that impose a new obligation on the institution of higher education, excluding gifts for scholarships or other financial aid. Each public institution of higher education shall retain documentation of such terms and conditions in compliance with the Virginia Public Records Act (§ 42.1-76 et seq.) and such documentation shall be subject to the provisions of the Virginia Freedom of Information Act (§ 2.2-3700 et seq.).”
+
+Washington❓
+The investments of the endowments have to be disclosed, but more granular investment data/strategy does not if the release of information could be expected to affect the endowment’s profits. Gift restrictions are also public information unless the gift giver specifies, as a condition of the gift, that the restrictions are not public.
+
+The foundations may not be subject to public records requests, but they likely hold public records which must be disclosed. There was a 2020 court case in Clark County Superior Court that ruled the Clark College Foundation was not a public body, but this is only binding within Clark County. However, endowments and gift restrictions may be held by the foundations, in which case they would be custodians of public information.
+
+The 2024 Disclosure Statutes do not include university foundations as part of the list of exemptions.
+
+
+Public records statute
+RCW 42.56.270
+“The following financial, commercial, and proprietary information is exempt from disclosure under this chapter:
+…
+(20) Financial and commercial information submitted to or obtained by the University of Washington, other than information the university is required to disclose under RCW  28B.20.150, when the information relates to investments in private funds, to the extent that such information, if revealed, would reasonably be expected to result in loss to the University of Washington consolidated endowment fund or to result in private loss to the providers of this information;”
+
+RCW 42.56.320 Educational information. 
+“The following educational information is exempt from disclosure under this chapter:
+…
+(4) Except for public records as defined in RCW 40.14.010 [the definition of public records], any records or documents obtained by a state college, university, library, or archive through or concerning any gift, grant, conveyance, bequest, or devise, the terms of which restrict or regulate public access to those records or documents;”
+
+RCW 28B.20.150 Endowment investments—Disclosure of private fund information—Conflicts of interest.
+
+“The University of Washington must disclose: (1) The names and commitment amounts of the private funds in which it is invested; and (2) the aggregate quarterly performance results for its portfolio of investments in such funds. The University of Washington shall have formal policies addressing conflicts of interest in regard to the private funds in which the endowment is invested, in compliance with RCW 42.52.190, and shall post these policies on their public website.
+[ 2009 c 394 s 2.]
+
+Intent—2009 c 394: "The intent of this act is to clarify provisions governing disclosure of information related to University of Washington endowment investments, and thereby improve the university's ability to maximize the performance of its endowment portfolio. For endowment investments in privately managed funds, this act requires disclosure of the names of the funds, the amounts invested in the funds, and quarterly performance results for the endowment's portfolio of investments in such funds. These disclosures are intended to provide the public with information about the overall performance of the privately managed endowment investments, while prohibiting disclosure of proprietary information that could result in loss to the endowment or to persons who provide the proprietary information." [ 2009 c 394 s 1.]”
+
+
+Foundations can get public funding-generally really important for considerations of whether a body is public or not-for faculty excellence awards. Requires foundations to agree that the university assumes complete control of foundation property if the foundation ceases to exist.
+RCW 28B.50.835-844
+8351: “For purposes of RCW 28B.50.835 through 28B.50.843 "foundation" means a private nonprofit corporation that: (1) Is registered under Title 24 RCW and qualified as a tax-exempt entity under section 501(c)(3) of the federal internal revenue code; (2) exists solely for the benefit of one or more community or technical colleges in this state; and (3) is registered with the attorney general's office under the charitable trust act, chapter 11.110 RCW.”
+
+844: “A foundation is not eligible to receive matching funds under RCW 28B.50.835 through 28B.50.843 unless the foundation and the board of trustees of the college for whose benefit the foundation exists have entered into a contract, approved by the attorney general, that: (1) Specifies the services to be provided by the foundation; (2) provides for protection of the community and technical college exceptional awards endowment funds under the foundation's control; and (3) provides for the college's assumption of ownership, management, and control of such funds if the foundation ceases to exist or function properly, or fails to provide the specified services in accordance with the contract.”
+
+
+
+
+West Virginia ❌
+In 4-H Road Community Association v. West Virginia University Foundation (1989), the Supreme Court of West Virginia held that the foundation's financial activity was not subject to the state's Freedom of Information Act (FOIA).
+
+Many sources, including here, here, and here indicate it is still law.
+Wisconsin ❌
+“19.32 Definitions. As used in ss. 19.32 to 19.39:
+(1) “Authority” means any of the following having custody of a record: a state or local office, elective official, agency, board, commission, committee, council, department or public body corporate and politic created by the constitution or by any law, ordinance, rule or order; a governmental or quasi-governmental corporation except for the Bradley center sports and entertainment corporation; a special purpose district; any court of law; the assembly or senate; a nonprofit corporation which receives more than 50 percent of its funds from a county or a municipality, as defined in s. 59.001 (3), and which provides services related to public health or safety to the county or municipality; a university police department under s. 175.42; or a formally constituted subunit of any of the foregoing.”
+
+Holding in State ex rel Flynn v. Kemper Center (2019):
+“Each case involving an alleged quasi-governmental corporation must be decided on the particular facts presented. An entity is a quasi-governmental corporation if, based on the totality of the circumstances, the entity resembles a governmental corporation in function, effect, or status. Accordingly, courts must consider a nonexhaustive list of factors, with no single factor being outcome determinative. The five factors that guided the supreme court’s conclusion in Beaver Dam Area Development Corp., 2008 WI 90, are: 1) whether the entity’s funding comes from predominately public or private sources; 2) whether the entity serves a public function; 3) whether the entity appears to the public to be a government entity; 4) the degree to which the entity is subject to government control; and 5) the amount of access governmental bodies have to the entity’s records.”
+
+Holding in State of Wisconsin v. Beaver Dam Area Development Corp. (2008):
+“A corporation is quasi-governmental if, based on the totality of the circumstances, it resembles a governmental corporation in function, effect, or status, requiring a case-by-case analysis. Here, a primary consideration was that the body was funded exclusively by public tax dollars or interest thereon. Additionally, its office was located in the municipal building, it was listed on the city website, the city provided it with clerical support and office supplies, all its assets revert to the city if it ceased to exist, its books were open for city inspection, the mayor and another city official were directors, and it had no clients other than the city.”
+
+AG opinion 74 Op. Att'y Gen. 38, 41-42 (1985) says “Neither the open meetings law nor public records law is applicable to independent private associations or non-profit corporations which have a public purpose and are organized by friends of the university or other state agencies.” as part of a swath of findings prior to the above cases which limit the extent to which “quasi-corporations” can be public.
+
+Wyoming ❓
+Summary of public record/open meeting court cases by Wyoming Press Association contains no precedent for our case.
